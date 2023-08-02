@@ -16,7 +16,7 @@ import dev.xdark.classfile.attribute.shared.annotation.impl.ElementStringImpl;
 import dev.xdark.classfile.io.Codec;
 
 public final class ElementDescriptor<E extends Element> {
-	private static final ElementDescriptor<?>[] TABLE = new ElementDescriptor['Z' + 1];
+	private static final ElementDescriptor<?>[] TABLE = new ElementDescriptor['s' + 1];
 	public static final ElementDescriptor<ElementByte> BYTE = create('B', ElementByteImpl.codec());
 	public static final ElementDescriptor<ElementChar> CHAR = create('C', ElementCharImpl.codec());
 	public static final ElementDescriptor<ElementDouble> DOUBLE = create('D', ElementDoubleImpl.codec());
@@ -47,7 +47,11 @@ public final class ElementDescriptor<E extends Element> {
 	}
 
 	public static ElementDescriptor<?> byTag(int tag) {
-		return TABLE[tag];
+		ElementDescriptor<?>[] table;
+		if (tag < 0 || tag >= (table = TABLE).length) {
+			return null;
+		}
+		return table[tag];
 	}
 
 	private static <E extends Element> ElementDescriptor<E> create(int tag, Codec<E> codec) {
