@@ -138,8 +138,11 @@ public final class ClassFileImpl implements ClassFile {
 		{
 			int constantCount = classReader.readUnsignedShort() - 1;
 			while (constantCount-- != 0) {
-				// Should've been checked before.
-				Tag<?> tag = Tag.byId(classReader.readUnsignedByte());
+				int rawTag = classReader.readUnsignedByte();
+				Tag<?> tag = Tag.byId(rawTag);
+				if (tag == null) {
+					throw new BadClassFileFormatException(String.format("Unknown constant pool tag %d", rawTag));
+				}
 				Constant constant = tag.codec().read(classReader);
 				constantPool.add(constant);
 				if (constant instanceof ConstantWide) {
