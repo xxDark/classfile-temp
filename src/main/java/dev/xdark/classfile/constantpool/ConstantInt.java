@@ -10,6 +10,6 @@ public interface ConstantInt extends Constant {
 	Tag<ConstantInt> tag();
 
 	static ConstantInt create(int value) {
-		return new ConstantIntImpl(value);
+		return ConstantIntImpl.get(value);
 	}
 }

@@ -6,7 +6,7 @@ import dev.xdark.classfile.attribute.shared.annotation.RuntimeVisibleAnnotations
 import dev.xdark.classfile.constantpool.ConstantPool;
 import dev.xdark.classfile.constantpool.Tag;
 import dev.xdark.classfile.representation.Annotatable;
-import dev.xdark.classfile.representation.AnnotationVisitor;
+import dev.xdark.classfile.representation.AnnotationsVisitor;
 import dev.xdark.classfile.representation.annotation.AnnotationContainerVisitor;
 import dev.xdark.classfile.type.InstanceType;
 
@@ -16,12 +16,12 @@ final class VisitorHelper {
 	private VisitorHelper() {
 	}
 
-	static void visitAnnotations(ConstantPool constantPool, Annotatable annotatable, RuntimeAnnotationsAttribute attribute) {
-		AnnotationVisitor visitor;
+	static void readAnnotations(ConstantPool constantPool, Annotatable annotatable, RuntimeAnnotationsAttribute attribute) {
+		AnnotationsVisitor visitor;
 		if (attribute instanceof RuntimeVisibleAnnotationsAttribute) {
-			visitor = annotatable.visitVisibleAnnotations();
+			visitor = annotatable.visitVisibleRuntimeAnnotations();
 		} else {
-			visitor = annotatable.visitInvisibleAnnotations();
+			visitor = annotatable.visitInvisibleRuntimeAnnotations();
 		}
 		if (visitor != null) {
 			List<ElementAnnotation> annotations = attribute.annotations();

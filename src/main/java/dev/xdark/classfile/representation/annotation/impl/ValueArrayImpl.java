@@ -1,16 +1,19 @@
 package dev.xdark.classfile.representation.annotation.impl;
 
+import dev.xdark.classfile.attribute.shared.annotation.Element;
+import dev.xdark.classfile.attribute.shared.annotation.ElementArray;
+import dev.xdark.classfile.constantpool.MutableConstantPool;
 import dev.xdark.classfile.representation.annotation.AnnotationContainer;
 import dev.xdark.classfile.representation.annotation.AnnotationContainerVisitor;
 import dev.xdark.classfile.representation.annotation.AnnotationValue;
 import dev.xdark.classfile.representation.annotation.AnnotationValueSink;
 import dev.xdark.classfile.representation.annotation.ValueArray;
 import dev.xdark.classfile.representation.annotation.ValueArrayVisitor;
-import dev.xdark.classfile.representation.annotation.ValueEnum;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public final class ValueArrayImpl implements ValueArray {
+public final class ValueArrayImpl implements ValueArray, ValueInternal {
 	private final List<AnnotationValue> values;
 
 	public ValueArrayImpl(List<AnnotationValue> values) {
@@ -46,5 +49,15 @@ public final class ValueArrayImpl implements ValueArray {
 	@Override
 	public void accept(AnnotationValueSink sink) {
 		sink.acceptArray(this);
+	}
+
+	@Override
+	public Element denormalize(MutableConstantPool constantPool) {
+		List<AnnotationValue> values = this.values;
+		List<Element> denormalized = new ArrayList<>(values.size());
+		for (AnnotationValue value : values) {
+			denormalized.add(((ValueInternal) value).denormalize(constantPool));
+		}
+		return ElementArray.create(denormalized);
 	}
 }

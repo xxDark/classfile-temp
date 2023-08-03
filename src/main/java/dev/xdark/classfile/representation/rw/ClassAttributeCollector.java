@@ -27,7 +27,7 @@ final class ClassAttributeCollector implements AttributesVisitor {
 			reader.cv.visitSignature(reader.constantPool.get(((SignatureAttribute) attribute).signatureIndex(), Tag.Utf8).value());
 		} else if (attribute instanceof RuntimeAnnotationsAttribute) {
 			ClassVisitorReader reader = this.reader;
-			VisitorHelper.visitAnnotations(reader.constantPool, reader.cv, (RuntimeAnnotationsAttribute) attribute);
+			VisitorHelper.readAnnotations(reader.constantPool, reader.cv, (RuntimeAnnotationsAttribute) attribute);
 		}
 	}
 

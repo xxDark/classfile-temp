@@ -10,11 +10,11 @@ import dev.xdark.classfile.representation.annotation.AnnotationContainerVisitor;
 import dev.xdark.classfile.representation.annotation.ValueArrayVisitor;
 import dev.xdark.classfile.type.InstanceType;
 
-public final class ArrayVisitorReader implements ArrayVisitor {
+public final class AnnotationArrayVisitorReader implements ArrayVisitor {
 	private final ConstantPool constantPool;
 	private final ValueArrayVisitor av;
 
-	public ArrayVisitorReader(ConstantPool constantPool, ValueArrayVisitor av) {
+	public AnnotationArrayVisitorReader(ConstantPool constantPool, ValueArrayVisitor av) {
 		this.constantPool = constantPool;
 		this.av = av;
 	}
@@ -34,6 +34,6 @@ public final class ArrayVisitorReader implements ArrayVisitor {
 	@Override
 	public ArrayVisitor visitArray() {
 		ValueArrayVisitor visitor = av.visitArray();
-		return visitor == null ? null : new ArrayVisitorReader(constantPool, visitor);
+		return visitor == null ? null : new AnnotationArrayVisitorReader(constantPool, visitor);
 	}
 }

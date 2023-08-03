@@ -9,9 +9,10 @@ import dev.xdark.classfile.representation.SymbolTable;
 import dev.xdark.classfile.representation.entity.constant.LoadableConstant;
 
 public final class ConstantIntImpl implements ConstantInt, ConstantInternal {
+	private static final ConstantInt[] CACHE;
 	private final int value;
 
-	public ConstantIntImpl(int value) {
+	ConstantIntImpl(int value) {
 		this.value = value;
 	}
 
@@ -45,10 +46,25 @@ public final class ConstantIntImpl implements ConstantInt, ConstantInternal {
 		return LoadableConstant.create(value);
 	}
 
+	public static ConstantInt get(int value) {
+		if (value < Byte.MIN_VALUE || value > Byte.MAX_VALUE) {
+			return new ConstantIntImpl(value);
+		}
+		return CACHE[value & 0xff];
+	}
+
 	public static Codec<ConstantInt> codec() {
 		return Codec.wire(
-				Input.wire(input -> new ConstantIntImpl(input.readInt()), ExactSkip.U4),
+				Input.wire(input -> get(input.readInt()), ExactSkip.U4),
 				(output, value) -> output.writeInt(value.value())
 		);
+	}
+
+	static {
+		ConstantInt[] cache = new ConstantInt[256];
+		for (int i = 0; i < 256; i++) {
+			cache[i] = new ConstantIntImpl((byte) i);
+		}
+		CACHE = cache;
 	}
 }

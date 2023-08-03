@@ -1,24 +1,39 @@
 package dev.xdark.classfile.representation.model.impl;
 
-import dev.xdark.classfile.FieldVisitor;
-import dev.xdark.classfile.attribute.SpecAttribute;
-import dev.xdark.classfile.attribute.field.ConstantValueAttribute;
-import dev.xdark.classfile.representation.SymbolTable;
+import dev.xdark.classfile.representation.AnnotationsVisitor;
+import dev.xdark.classfile.representation.AttributesVisitor;
+import dev.xdark.classfile.representation.FieldVisitor;
 import dev.xdark.classfile.representation.entity.constant.LoadableConstant;
-import dev.xdark.classfile.representation.model.impl.MemberMetadataCollector;
 
-class FieldVisitorImpl extends MemberMetadataCollector implements FieldVisitor {
-	LoadableConstant constantValue;
+final class FieldVisitorImpl implements FieldVisitor {
+	private final FieldModelImpl fieldModel;
 
-	FieldVisitorImpl(SymbolTable symbolTable, int accessFlags, int name, int type) {
-		super(symbolTable, accessFlags, name, type);
+	FieldVisitorImpl(FieldModelImpl fieldModel) {
+		this.fieldModel = fieldModel;
 	}
 
 	@Override
-	public void visit(int nameIndex, SpecAttribute attribute) {
-		super.visit(nameIndex, attribute);
-		if (attribute instanceof ConstantValueAttribute) {
-			constantValue = symbolTable.getConstant(((ConstantValueAttribute) attribute).constantIndex());
-		}
+	public void visitConstantValue(LoadableConstant constant) {
+		fieldModel.constantValue = constant;
+	}
+
+	@Override
+	public void visitSignature(String signature) {
+		fieldModel.signature = signature;
+	}
+
+	@Override
+	public AnnotationsVisitor visitVisibleRuntimeAnnotations() {
+		return new AnnotationsCollector(fieldModel.visibleRuntimeAnnotations());
+	}
+
+	@Override
+	public AnnotationsVisitor visitInvisibleRuntimeAnnotations() {
+		return new AnnotationsCollector(fieldModel.invisibleRuntimeAnnotations());
+	}
+
+	@Override
+	public AttributesVisitor visitAttributes() {
+		return fieldModel.unrecognizedAttributes()::add;
 	}
 }

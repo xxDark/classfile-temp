@@ -27,7 +27,7 @@ class MemberVisitorReader implements MemberVisitor, Attributable, AttributesVisi
 		if (attribute instanceof SignatureAttribute) {
 			mv.visitSignature(symbolTable.constantPool().get(((SignatureAttribute) attribute).signatureIndex(), Tag.Utf8).value());
 		} else if (attribute instanceof RuntimeAnnotationsAttribute) {
-			VisitorHelper.visitAnnotations(symbolTable.constantPool(), mv, (RuntimeAnnotationsAttribute) attribute);
+			VisitorHelper.readAnnotations(symbolTable.constantPool(), mv, (RuntimeAnnotationsAttribute) attribute);
 		}
 	}
 

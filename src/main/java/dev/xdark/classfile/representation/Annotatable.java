@@ -2,7 +2,7 @@ package dev.xdark.classfile.representation;
 
 public interface Annotatable {
 
-	AnnotationVisitor visitVisibleAnnotations();
+	AnnotationsVisitor visitVisibleRuntimeAnnotations();
 
-	AnnotationVisitor visitInvisibleAnnotations();
+	AnnotationsVisitor visitInvisibleRuntimeAnnotations();
 }

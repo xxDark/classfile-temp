@@ -5,7 +5,7 @@ import dev.xdark.classfile.representation.Attributed;
 import dev.xdark.classfile.representation.Signed;
 import dev.xdark.classfile.representation.Typed;
 
-public interface MemberModel extends Accessible, Typed, Signed, Attributed {
+public interface MemberModel extends Accessible, Typed, Signed, Attributed, Annotated {
 
 	String name();
 }

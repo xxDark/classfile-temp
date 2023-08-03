@@ -1,79 +1,76 @@
 package dev.xdark.classfile.representation.model.impl;
 
 import dev.xdark.classfile.ClassFileVersion;
-import dev.xdark.classfile.FieldVisitor;
-import dev.xdark.classfile.MethodVisitor;
-import dev.xdark.classfile.attribute.AttributesVisitor;
-import dev.xdark.classfile.constantpool.BasicConstantPool;
-import dev.xdark.classfile.constantpool.ConstantPool;
-import dev.xdark.classfile.constantpool.MutableConstantPool;
-import dev.xdark.classfile.constantpool.Tag;
+import dev.xdark.classfile.representation.AnnotationsVisitor;
+import dev.xdark.classfile.representation.AttributesVisitor;
+import dev.xdark.classfile.representation.FieldVisitor;
+import dev.xdark.classfile.representation.MethodVisitor;
+import dev.xdark.classfile.representation.SymbolTable;
 import dev.xdark.classfile.representation.model.ClassModel;
 import dev.xdark.classfile.representation.model.ClassModelReader;
-import dev.xdark.classfile.representation.MutableSymbolTable;
+import dev.xdark.classfile.type.ClassType;
 import dev.xdark.classfile.type.InstanceType;
+import dev.xdark.classfile.type.MethodType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public final class ClassModelReaderImpl implements ClassModelReader {
-	private final List<FieldVisitorImpl> fields = new ArrayList<>();
-	private final List<MethodVisitorImpl> methods = new ArrayList<>();
-	private ClassFileVersion version;
-	private MutableSymbolTable symbolTable;
-	private int accessFlags;
-	private InstanceType type;
-	private InstanceType superType;
-	private List<InstanceType> interfaces;
+	private final ClassModelImpl classModel = new ClassModelImpl();
 
 	@Override
 	public void visitVersion(ClassFileVersion version) {
-		this.version = version;
+		classModel.version = version;
 	}
 
 	@Override
-	public MutableConstantPool visitConstantPool() {
-		MutableSymbolTable symtab = symbolTable;
-		if (symtab == null) {
-			symtab = MutableSymbolTable.create(new BasicConstantPool());
-			symbolTable = symtab;
-		}
-		return symtab.constantPool();
+	public void visitSymbolTable(SymbolTable symbolTable) {
 	}
 
 	@Override
-	public void visitHeader(int accessFlags, int thisClass, int superClass, int[] interfaces) {
-		this.accessFlags = accessFlags;
-		MutableConstantPool constantPool = symbolTable.constantPool();
-		type = getInstanceType(constantPool, thisClass);
-		if (superClass != 0) {
-			superType = getInstanceType(constantPool, thisClass);
-		}
+	public void visitHeader(int accessFlags, InstanceType thisClass, InstanceType superClass, List<InstanceType> interfaces) {
+		ClassModelImpl cm = classModel;
+		cm.accessFlags = accessFlags;
+		cm.type = thisClass;
+		cm.superType = superClass;
+		cm.interfaces = interfaces;
 	}
 
 	@Override
-	public MethodVisitor visitMethod(int accessFlags, int nameIndex, int descriptorIndex) {
-		return null;
+	public FieldVisitor visitField(int accessFlags, String name, ClassType type) {
+		FieldModelImpl fieldModel = new FieldModelImpl(accessFlags, name, type);
+		classModel.fields.add(fieldModel);
+		return new FieldVisitorImpl(fieldModel);
 	}
 
 	@Override
-	public FieldVisitor visitField(int accessFlags, int nameIndex, int descriptorIndex) {
-		return null;
+	public MethodVisitor visitMethod(int accessFlags, String name, MethodType type) {
+		MethodModelImpl methodModel = new MethodModelImpl(accessFlags, name, type);
+		classModel.methods.add(methodModel);
+		return new MethodVisitorImpl(methodModel);
 	}
 
 	@Override
-	public AttributesVisitor visitAttributes() {
-		return null;
+	public void visitSignature(String signature) {
+		classModel.signature = signature;
 	}
 
 	@Override
 	public ClassModel visitEnd() {
-		return null;
+		return classModel;
 	}
 
-	private static InstanceType getInstanceType(ConstantPool constantPool, int idx) {
-		return InstanceType.ofInternalName(
-				constantPool.get(constantPool.get(idx, Tag.Class).nameIndex(), Tag.Utf8).value()
-		);
+	@Override
+	public AnnotationsVisitor visitVisibleRuntimeAnnotations() {
+		return new AnnotationsCollector(classModel.visibleRuntimeAnnotations());
+	}
+
+	@Override
+	public AnnotationsVisitor visitInvisibleRuntimeAnnotations() {
+		return new AnnotationsCollector(classModel.invisibleRuntimeAnnotations());
+	}
+
+	@Override
+	public AttributesVisitor visitAttributes() {
+		return classModel.unrecognizedAttributes()::add;
 	}
 }

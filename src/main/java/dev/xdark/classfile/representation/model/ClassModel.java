@@ -9,7 +9,7 @@ import dev.xdark.classfile.type.InstanceType;
 
 import java.util.List;
 
-public interface ClassModel extends Accessible, Typed, Signed, Attributed {
+public interface ClassModel extends Accessible, Typed, Signed, Attributed, Annotated {
 
 	ClassFileVersion version();
 

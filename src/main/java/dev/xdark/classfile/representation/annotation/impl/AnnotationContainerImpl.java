@@ -1,5 +1,9 @@
 package dev.xdark.classfile.representation.annotation.impl;
 
+import dev.xdark.classfile.attribute.shared.annotation.Element;
+import dev.xdark.classfile.attribute.shared.annotation.ElementAnnotation;
+import dev.xdark.classfile.constantpool.ConstantUtf8;
+import dev.xdark.classfile.constantpool.MutableConstantPool;
 import dev.xdark.classfile.representation.annotation.AnnotationContainer;
 import dev.xdark.classfile.representation.annotation.AnnotationContainerVisitor;
 import dev.xdark.classfile.representation.annotation.AnnotationValue;
@@ -8,9 +12,12 @@ import dev.xdark.classfile.representation.annotation.ValueArray;
 import dev.xdark.classfile.representation.annotation.ValueArrayVisitor;
 import dev.xdark.classfile.type.InstanceType;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-public final class AnnotationContainerImpl implements AnnotationContainer {
+public final class AnnotationContainerImpl implements AnnotationContainer, ValueInternal {
 	private final InstanceType type;
 	private final Map<String, AnnotationValue> values;
 
@@ -55,5 +62,21 @@ public final class AnnotationContainerImpl implements AnnotationContainer {
 	@Override
 	public void accept(AnnotationValueSink sink) {
 		sink.visitContainer(this);
+	}
+
+	@Override
+	public Element denormalize(MutableConstantPool constantPool) {
+		int typeIndex = constantPool.add(ConstantUtf8.create(type.descriptor()));
+		Map<String, AnnotationValue> values = this.values;
+		int count = values.size();
+		int[] nameIndices = new int[count];
+		List<Element> elements = new ArrayList<>(count);
+		Iterator<Map.Entry<String, AnnotationValue>> iterator = values.entrySet().iterator();
+		for (int i = 0; i < count; i++) {
+			Map.Entry<String, AnnotationValue> entry = iterator.next();
+			nameIndices[i] = constantPool.add(ConstantUtf8.create(entry.getKey()));
+			elements.add(((ValueInternal) entry.getValue()).denormalize(constantPool));
+		}
+		return ElementAnnotation.create(typeIndex, nameIndices, elements);
 	}
 }

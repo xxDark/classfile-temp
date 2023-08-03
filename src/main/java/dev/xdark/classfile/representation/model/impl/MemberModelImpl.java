@@ -1,23 +1,25 @@
 package dev.xdark.classfile.representation.model.impl;
 
 import dev.xdark.classfile.representation.model.MemberModel;
-import dev.xdark.classfile.representation.UnrecognizedAttribute;
 import dev.xdark.classfile.type.Type;
 
-import java.util.List;
+import java.util.ArrayList;
 
-abstract class MemberModelImpl extends AttributedImpl implements MemberModel {
-	private final int accessFlags;
-	private final String name;
-	private final Type type;
-	private final String signature;
+abstract class MemberModelImpl extends BaseImpl implements MemberModel {
+	int accessFlags;
+	String name;
+	Type type;
+	String signature;
 
-	MemberModelImpl(int accessFlags, String name, Type type, String signature, List<UnrecognizedAttribute> unrecognizedAttributes) {
-		super(unrecognizedAttributes);
+	MemberModelImpl(
+			int accessFlags,
+			String name,
+			Type type
+	) {
+		super(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 		this.accessFlags = accessFlags;
 		this.name = name;
 		this.type = type;
-		this.signature = signature;
 	}
 
 	@Override
