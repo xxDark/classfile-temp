@@ -8,13 +8,18 @@ import dev.xdark.classfile.attribute.shared.annotation.ElementAnnotation;
 import dev.xdark.classfile.attribute.shared.annotation.ElementArray;
 import dev.xdark.classfile.attribute.shared.annotation.ElementDescriptor;
 import dev.xdark.classfile.constantpool.ConstantPool;
+import dev.xdark.classfile.constantpool.Tag;
 import dev.xdark.classfile.io.Codec;
 import dev.xdark.classfile.io.Input;
+import dev.xdark.classfile.representation.annotation.AnnotationContainer;
 import dev.xdark.classfile.representation.annotation.AnnotationValue;
+import dev.xdark.classfile.type.InstanceType;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class ElementAnnotationImpl implements ElementAnnotation, ElementInternal {
 	private final int typeIndex;
@@ -73,7 +78,15 @@ public final class ElementAnnotationImpl implements ElementAnnotation, ElementIn
 
 	@Override
 	public AnnotationValue normalise(ConstantPool constantPool) {
-		throw new UnsupportedOperationException("Should've been normalised at call site");
+		InstanceType type = InstanceType.ofDescriptor(constantPool.get(typeIndex, Tag.Utf8).value());
+		int[] nameIndices = this.nameIndices;
+		Iterator<Element> values = this.values.iterator();
+		Map<String, AnnotationValue> map = new LinkedHashMap<>((int) Math.ceil(nameIndices.length / 0.75D));
+		for (int nameIndex : nameIndices) {
+			String name = constantPool.get(nameIndex, Tag.Utf8).value();
+			map.put(name, ((ElementInternal) values.next()).normalise(constantPool));
+		}
+		return AnnotationContainer.create(type, map);
 	}
 
 	public static Codec<ElementAnnotation> codec() {
@@ -85,12 +98,7 @@ public final class ElementAnnotationImpl implements ElementAnnotation, ElementIn
 					List<Element> elements = new ArrayList<>();
 					for (int i = 0; i < pairs; i++) {
 						names[i] = reader.readConstantPoolIndex();
-						int rawTag = reader.readUnsignedByte();
-						ElementDescriptor<?> descriptor = ElementDescriptor.byTag(rawTag);
-						if (descriptor == null) {
-							throw new BadClassFileFormatException(String.format("Unknown annotation tag %s", (char) rawTag));
-						}
-						elements.add(descriptor.codec().read(reader));
+						elements.add(Element.CODEC.read(reader));
 					}
 					return new ElementAnnotationImpl(typeIndex, names, elements);
 				}, reader -> {
@@ -98,12 +106,7 @@ public final class ElementAnnotationImpl implements ElementAnnotation, ElementIn
 					int pairs = reader.readUnsignedShort();
 					while (pairs-- != 0) {
 						reader.skipConstantPoolIndex();
-						int rawTag = reader.readUnsignedByte();
-						ElementDescriptor<?> descriptor = ElementDescriptor.byTag(rawTag);
-						if (descriptor == null) {
-							throw new BadClassFileFormatException(String.format("Unknown annotation tag %s", (char) rawTag));
-						}
-						descriptor.codec().skip(reader);
+						Element.CODEC.skip(reader);
 					}
 				}),
 				(writer, value) -> {
@@ -118,10 +121,7 @@ public final class ElementAnnotationImpl implements ElementAnnotation, ElementIn
 					for (int i = 0; i < len; i++) {
 						writer.writeConstantPoolIndex(names[i]);
 						Element element = values.get(i);
-						ElementDescriptor<?> descriptor = element.descriptor();
-						writer.writeByte(descriptor.tag());
-						//noinspection unchecked,rawtypes
-						((Codec) descriptor.codec()).write(writer, element);
+						Element.CODEC.write(writer, element);
 					}
 				}
 		);

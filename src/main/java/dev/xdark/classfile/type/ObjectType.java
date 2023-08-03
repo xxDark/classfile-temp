@@ -26,4 +26,11 @@ public interface ObjectType extends ClassType {
 		}
 		return InstanceType.ofDescriptor(descriptor);
 	}
+
+	static ObjectType ofClass(Class<?> c) {
+		if (c.isArray()) {
+			return ArrayType.ofClass(c);
+		}
+		return InstanceType.ofClass(c);
+	}
 }

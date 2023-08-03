@@ -4,6 +4,10 @@ import dev.xdark.classfile.representation.AnnotationsVisitor;
 import dev.xdark.classfile.representation.AttributesVisitor;
 import dev.xdark.classfile.representation.CodeVisitor;
 import dev.xdark.classfile.representation.MethodVisitor;
+import dev.xdark.classfile.representation.annotation.AnnotationValue;
+import dev.xdark.classfile.representation.annotation.AnnotationValueSink;
+import dev.xdark.classfile.representation.annotation.GeneralAnnotationValueSink;
+import dev.xdark.classfile.representation.method.MethodParameter;
 import dev.xdark.classfile.representation.model.CodeModel;
 
 final class MethodVisitorImpl implements MethodVisitor {
@@ -37,6 +41,21 @@ final class MethodVisitorImpl implements MethodVisitor {
 	@Override
 	public AnnotationsVisitor visitInvisibleRuntimeAnnotations() {
 		return new AnnotationsCollector(methodModel.invisibleRuntimeAnnotations());
+	}
+
+	@Override
+	public AnnotationValueSink annotationDefaultSink() {
+		return new GeneralAnnotationValueSink() {
+			@Override
+			protected void accept(AnnotationValue value) {
+				methodModel.annotationDefault = value;
+			}
+		};
+	}
+
+	@Override
+	public void visitParameter(MethodParameter parameter) {
+		methodModel.parameters.add(parameter);
 	}
 
 	@Override

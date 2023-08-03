@@ -11,6 +11,7 @@ import dev.xdark.classfile.constantpool.ConstantPool;
 import dev.xdark.classfile.io.Codec;
 import dev.xdark.classfile.io.Input;
 import dev.xdark.classfile.representation.annotation.AnnotationValue;
+import dev.xdark.classfile.representation.annotation.ValueArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,15 @@ public final class ElementArrayImpl implements ElementArray, ElementInternal {
 		return ElementDescriptor.ARRAY;
 	}
 
+	@Override
+	public AnnotationValue normalise(ConstantPool constantPool) {
+		List<AnnotationValue> values = new ArrayList<>();
+		for (Element element : elements) {
+			values.add(((ElementInternal) element).normalise(constantPool));
+		}
+		return ValueArray.create(values);
+	}
+
 	public static Codec<ElementArray> codec() {
 		return Codec.wire(Input.wire(reader -> {
 			int count = reader.readUnsignedShort();
@@ -87,10 +97,5 @@ public final class ElementArrayImpl implements ElementArray, ElementInternal {
 				((Codec) descriptor.codec()).write(writer, element);
 			}
 		});
-	}
-
-	@Override
-	public AnnotationValue normalise(ConstantPool constantPool) {
-		throw new UnsupportedOperationException("Should've been normalised at call site");
 	}
 }

@@ -10,4 +10,15 @@ public interface ClassType extends Type {
 		}
 		return (ClassType) type;
 	}
+
+	static ClassType ofClass(Class<?> c) {
+		Class<?> ct = c.getComponentType();
+		if (ct != null) {
+			return ArrayType.create(ofClass(ct));
+		}
+		if (c.isPrimitive()) {
+			return PrimitiveType.ofClass(c);
+		}
+		return InstanceType.ofExternalName(c.getName());
+	}
 }

@@ -31,8 +31,10 @@ import dev.xdark.classfile.attribute.klass.module.ModulePackagesAttribute;
 import dev.xdark.classfile.attribute.klass.module.impl.ModuleAttributeImpl;
 import dev.xdark.classfile.attribute.klass.module.impl.ModuleMainClassAttributeImpl;
 import dev.xdark.classfile.attribute.klass.module.impl.ModulePackagesAttributeImpl;
+import dev.xdark.classfile.attribute.method.AnnotationDefaultAttribute;
 import dev.xdark.classfile.attribute.method.ExceptionsAttribute;
 import dev.xdark.classfile.attribute.method.MethodParametersAttribute;
+import dev.xdark.classfile.attribute.method.impl.AnnotationDefaultAttributeImpl;
 import dev.xdark.classfile.attribute.method.impl.ExceptionsAttributeImpl;
 import dev.xdark.classfile.attribute.method.impl.MethodParametersAttributeImpl;
 import dev.xdark.classfile.attribute.shared.DeprecatedAttribute;
@@ -78,6 +80,7 @@ public final class AttributeInfo<A extends SpecAttribute> implements AttributeMa
 	public static final AttributeInfo<CodeAttribute> Code = method("Code", ClassFileVersion.V1_0, CodeAttributeImpl.codec());
 	public static final AttributeInfo<ExceptionsAttribute> Exceptions = method("Exceptions", ClassFileVersion.V1_0, ExceptionsAttributeImpl.codec());
 	public static final AttributeInfo<MethodParametersAttribute> MethodParameters = method("MethodParameters", ClassFileVersion.V8, MethodParametersAttributeImpl.codec());
+	public static final AttributeInfo<AnnotationDefaultAttribute> AnnotationDefault = method("AnnotationDefault", ClassFileVersion.V1_5, AnnotationDefaultAttributeImpl.codec());
 	public static final AttributeInfo<LineNumberTableAttribute> LineNumberTable = code("LineNumberTable", ClassFileVersion.V1_0, LineNumberTableAttributeImpl.codec());
 
 	private final String name;

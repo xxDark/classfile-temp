@@ -1,20 +1,16 @@
 package dev.xdark.classfile.representation.bytecode;
 
-import dev.xdark.classfile.bytecode.BytecodeAdapter;
-import dev.xdark.classfile.bytecode.BytecodeVisitor;
 import dev.xdark.classfile.bytecode.BytecodeVisitorSkeleton;
 import dev.xdark.classfile.io.BinaryInput;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
-public final class LabelMarkVisitor extends BytecodeAdapter {
-	private static final BytecodeVisitor NOOP = new BytecodeVisitorSkeleton();
+public final class LabelMarkVisitor extends BytecodeVisitorSkeleton {
 	private final InstructionPositionTracker positionTracker;
 	private final LabelArray labelArray;
 
 	public LabelMarkVisitor(InstructionPositionTracker positionTracker, LabelArray labelArray) {
-		super(NOOP);
 		this.positionTracker = positionTracker;
 		this.labelArray = labelArray;
 	}

@@ -63,7 +63,8 @@ public final class ArrayType implements ObjectType {
 	}
 
 	public static ArrayType ofInternalName(String name) {
-		parse:{
+		parse:
+		{
 			if (name.charAt(0) != '[') {
 				break parse;
 			}
@@ -77,4 +78,11 @@ public final class ArrayType implements ObjectType {
 		throw new IllegalStateException("Bad array type " + name);
 	}
 
+	public static ArrayType ofClass(Class<?> c) {
+		Class<?> ct = c.getComponentType();
+		if (ct == null) {
+			throw new IllegalArgumentException(String.format("Not an array %s", c));
+		}
+		return create(ClassType.ofClass(ct));
+	}
 }

@@ -1,16 +1,25 @@
 package dev.xdark.classfile.representation.rw;
 
+import dev.xdark.classfile.attribute.Attribute;
+import dev.xdark.classfile.attribute.IndexedAttribute;
 import dev.xdark.classfile.attribute.SpecAttribute;
 import dev.xdark.classfile.attribute.code.CodeAttribute;
 import dev.xdark.classfile.attribute.code.ExceptionTableEntry;
+import dev.xdark.classfile.attribute.code.LineNumber;
+import dev.xdark.classfile.attribute.code.LineNumberTableAttribute;
+import dev.xdark.classfile.attribute.method.AnnotationDefaultAttribute;
+import dev.xdark.classfile.attribute.shared.annotation.impl.ElementInternal;
 import dev.xdark.classfile.bytecode.BytecodePump;
 import dev.xdark.classfile.constantpool.ConstantPool;
 import dev.xdark.classfile.constantpool.Tag;
 import dev.xdark.classfile.io.BinaryInput;
 import dev.xdark.classfile.representation.CodeVisitor;
+import dev.xdark.classfile.representation.Label;
 import dev.xdark.classfile.representation.MethodVisitor;
 import dev.xdark.classfile.representation.SymbolTable;
 import dev.xdark.classfile.representation.TryCatchBlock;
+import dev.xdark.classfile.representation.annotation.AnnotationValue;
+import dev.xdark.classfile.representation.annotation.AnnotationValueSink;
 import dev.xdark.classfile.representation.bytecode.BytecodeReader;
 import dev.xdark.classfile.representation.bytecode.BytecodeVisitor;
 import dev.xdark.classfile.representation.bytecode.FixedLabelArray;
@@ -45,12 +54,12 @@ final class MethodVisitorReader extends MemberVisitorReader implements dev.xdark
 			if (readable > 65535) {
 				throw new IllegalStateException(String.format("Method too large %d", readable));
 			}
-			LabelArray array = new FixedLabelArray((int) readable);
+			LabelArray labelArray = new FixedLabelArray((int) readable);
 			{
 				InstructionPositionTracker tracker = new SimpleInstructionPositionTracker();
 				// Mark all labels beforehand
 				try {
-					BytecodePump pump = new BytecodePump(bytecode.duplicate(), new LabelMarkVisitor(tracker, array), tracker);
+					BytecodePump pump = new BytecodePump(bytecode.duplicate(), new LabelMarkVisitor(tracker, labelArray), tracker);
 					pump.pumpAll();
 				} catch (IOException ex) {
 					throw new UncheckedIOException(ex);
@@ -59,16 +68,29 @@ final class MethodVisitorReader extends MemberVisitorReader implements dev.xdark
 			ConstantPool constantPool = symbolTable.constantPool();
 			// Create all try/catch blocks
 			for (ExceptionTableEntry entry : code.exceptionTable()) {
-				array.create(entry.start());
-				array.create(entry.end());
-				array.create(entry.handler());
+				labelArray.create(entry.start());
+				labelArray.create(entry.end());
+				labelArray.create(entry.handler());
+			}
+			// Visit all nested attributes
+			for (IndexedAttribute indexedAttr : code.attributes()) {
+				Attribute attr = indexedAttr.getAttribute();
+				if (attr instanceof LineNumberTableAttribute) {
+					// Set line numbers
+					LineNumberTableAttribute lineNumberTable = (LineNumberTableAttribute) attr;
+					for (LineNumber lineNumber : lineNumberTable.lineNumbers()) {
+						Label l = labelArray.create(lineNumber.start());
+						l.setLineNumber(lineNumber.lineNumber());
+					}
+					break;
+				}
 			}
 			// Visit all instructions
 			BytecodeVisitor bv = cv.visitBytecode();
 			if (bv != null) {
 				try {
-					LabelPlacementTracker tracker = new SimpleLabelPlacementTracker(array, bv);
-					BytecodeReader reader = new BytecodeReader(symbolTable, bv, array, tracker);
+					LabelPlacementTracker tracker = new SimpleLabelPlacementTracker(labelArray, bv);
+					BytecodeReader reader = new BytecodeReader(symbolTable, bv, labelArray, tracker);
 					BytecodePump pump = new BytecodePump(bytecode, reader, tracker);
 					pump.pumpAll();
 				} catch (IOException ex) {
@@ -79,13 +101,21 @@ final class MethodVisitorReader extends MemberVisitorReader implements dev.xdark
 			for (ExceptionTableEntry entry : code.exceptionTable()) {
 				int type = entry.typeIndex();
 				cv.visitTryCatchBlock(TryCatchBlock.create(
-						array.create(entry.start()),
-						array.create(entry.end()),
-						array.create(entry.handler()),
+						labelArray.create(entry.start()),
+						labelArray.create(entry.end()),
+						labelArray.create(entry.handler()),
 						type == 0 ? null : InstanceType.ofInternalName(
 								constantPool.get(constantPool.get(type, Tag.Class).nameIndex(), Tag.Utf8).value()
 						)
 				));
+			}
+			return;
+		}
+		if (attribute instanceof AnnotationDefaultAttribute) {
+			AnnotationValueSink sink = ((MethodVisitor) mv).annotationDefaultSink();
+			if (sink != null) {
+				AnnotationValue value = ((ElementInternal) ((AnnotationDefaultAttribute) attribute).defaultValue()).normalise(symbolTable.constantPool());
+				value.accept(sink);
 			}
 			return;
 		}

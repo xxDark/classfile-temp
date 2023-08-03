@@ -27,7 +27,6 @@ import dev.xdark.classfile.type.ClassType;
 import dev.xdark.classfile.type.InstanceType;
 import dev.xdark.classfile.type.MethodType;
 import dev.xdark.classfile.type.ObjectType;
-import dev.xdark.classfile.type.PrimitiveKind;
 import dev.xdark.classfile.type.PrimitiveType;
 
 import java.io.Closeable;
