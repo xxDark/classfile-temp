@@ -8,6 +8,9 @@ public interface ElementArray extends Element {
 
 	List<Element> elements();
 
+	void accept(ArrayVisitor visitor);
+
+	@Override
 	ElementDescriptor<ElementArray> descriptor();
 
 	static ElementArray create(List<Element> elements) {

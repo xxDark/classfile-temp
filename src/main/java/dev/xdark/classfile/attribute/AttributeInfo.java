@@ -38,6 +38,10 @@ import dev.xdark.classfile.attribute.method.impl.MethodParametersAttributeImpl;
 import dev.xdark.classfile.attribute.shared.DeprecatedAttribute;
 import dev.xdark.classfile.attribute.shared.SignatureAttribute;
 import dev.xdark.classfile.attribute.shared.SyntheticAttribute;
+import dev.xdark.classfile.attribute.shared.annotation.RuntimeInvisibleAnnotationsAttribute;
+import dev.xdark.classfile.attribute.shared.annotation.RuntimeVisibleAnnotationsAttribute;
+import dev.xdark.classfile.attribute.shared.annotation.impl.RuntimeInvisibleAnnotationsAttributeImpl;
+import dev.xdark.classfile.attribute.shared.annotation.impl.RuntimeVisibleAnnotationsAttributeImpl;
 import dev.xdark.classfile.attribute.shared.impl.DeprecatedAttributeImpl;
 import dev.xdark.classfile.attribute.shared.impl.SignatureAttributeImpl;
 import dev.xdark.classfile.attribute.shared.impl.SyntheticAttributeImpl;
@@ -64,9 +68,11 @@ public final class AttributeInfo<A extends SpecAttribute> implements AttributeMa
 	public static final AttributeInfo<RecordAttribute> Record = klass("Record", ClassFileVersion.V16, RecordAttributeImpl.codec());
 	public static final AttributeInfo<PermittedSubclassesAttribute> PermittedSubclasses = klass("PermittedSubclasses", ClassFileVersion.V17, PermittedSubclassesAttributeImpl.codec());
 
-	public static final AttributeInfo<SignatureAttribute> Signature = create("Signature", ClassFileVersion.V1_5, EnumSet.of(AttributeLocation.CLASS, AttributeLocation.METHOD, AttributeLocation.FIELD, AttributeLocation.RECORD_COMPONENT), SignatureAttributeImpl.codec());
-	public static final AttributeInfo<SyntheticAttribute> Synthetic = create("Synthetic", ClassFileVersion.V1_1, EnumSet.of(AttributeLocation.CLASS, AttributeLocation.METHOD, AttributeLocation.FIELD), SyntheticAttributeImpl.codec());
-	public static final AttributeInfo<DeprecatedAttribute> Deprecated = create("Deprecated", ClassFileVersion.V1_1, EnumSet.of(AttributeLocation.CLASS, AttributeLocation.METHOD, AttributeLocation.FIELD), DeprecatedAttributeImpl.codec());
+	public static final AttributeInfo<SignatureAttribute> Signature = cmfr("Signature", ClassFileVersion.V1_5, SignatureAttributeImpl.codec());
+	public static final AttributeInfo<RuntimeVisibleAnnotationsAttribute> RuntimeVisibleAnnotations = cmfr("RuntimeVisibleAnnotations", ClassFileVersion.V1_5, RuntimeVisibleAnnotationsAttributeImpl.codec());
+	public static final AttributeInfo<RuntimeInvisibleAnnotationsAttribute> RuntimeInvisibleAnnotations = cmfr("RuntimeInvisibleAnnotations", ClassFileVersion.V1_5, RuntimeInvisibleAnnotationsAttributeImpl.codec());
+	public static final AttributeInfo<SyntheticAttribute> Synthetic = cmf("Synthetic", ClassFileVersion.V1_1, SyntheticAttributeImpl.codec());
+	public static final AttributeInfo<DeprecatedAttribute> Deprecated = cmf("Deprecated", ClassFileVersion.V1_1, DeprecatedAttributeImpl.codec());
 
 	public static final AttributeInfo<ConstantValueAttribute> ConstantValue = field("ConstantValue", ClassFileVersion.V1_0, ConstantValueAttributeImpl.codec());
 	public static final AttributeInfo<CodeAttribute> Code = method("Code", ClassFileVersion.V1_0, CodeAttributeImpl.codec());
@@ -126,5 +132,13 @@ public final class AttributeInfo<A extends SpecAttribute> implements AttributeMa
 
 	private static <A extends SpecAttribute> AttributeInfo<A> code(String name, ClassFileVersion introducedVersion, Codec<A> codec) {
 		return create(name, introducedVersion, EnumSet.of(AttributeLocation.CODE_ATTRIBUTE), codec);
+	}
+
+	private static <A extends SpecAttribute> AttributeInfo<A> cmfr(String name, ClassFileVersion introducedVersion, Codec<A> codec) {
+		return create(name, introducedVersion, EnumSet.of(AttributeLocation.CLASS, AttributeLocation.METHOD, AttributeLocation.FIELD, AttributeLocation.RECORD_COMPONENT), codec);
+	}
+
+	private static <A extends SpecAttribute> AttributeInfo<A> cmf(String name, ClassFileVersion introducedVersion, Codec<A> codec) {
+		return create(name, introducedVersion, EnumSet.of(AttributeLocation.CLASS, AttributeLocation.METHOD, AttributeLocation.FIELD), codec);
 	}
 }

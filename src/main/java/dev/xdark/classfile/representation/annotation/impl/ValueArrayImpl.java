@@ -6,6 +6,7 @@ import dev.xdark.classfile.representation.annotation.AnnotationValue;
 import dev.xdark.classfile.representation.annotation.AnnotationValueSink;
 import dev.xdark.classfile.representation.annotation.ValueArray;
 import dev.xdark.classfile.representation.annotation.ValueArrayVisitor;
+import dev.xdark.classfile.representation.annotation.ValueEnum;
 
 import java.util.List;
 
@@ -23,7 +24,6 @@ public final class ValueArrayImpl implements ValueArray {
 
 	@Override
 	public void accept(ValueArrayVisitor visitor) {
-		List<AnnotationValue> values = this.values;
 		for (AnnotationValue value : values) {
 			if (value instanceof AnnotationContainer) {
 				AnnotationContainer ac = (AnnotationContainer) value;

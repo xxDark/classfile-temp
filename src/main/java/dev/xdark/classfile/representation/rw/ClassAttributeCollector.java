@@ -5,6 +5,7 @@ import dev.xdark.classfile.attribute.SpecAttribute;
 import dev.xdark.classfile.attribute.UnknownAttribute;
 import dev.xdark.classfile.attribute.klass.BootstrapMethodsAttribute;
 import dev.xdark.classfile.attribute.shared.SignatureAttribute;
+import dev.xdark.classfile.attribute.shared.annotation.RuntimeAnnotationsAttribute;
 import dev.xdark.classfile.constantpool.Tag;
 import dev.xdark.classfile.representation.UnrecognizedAttribute;
 
@@ -24,6 +25,9 @@ final class ClassAttributeCollector implements AttributesVisitor {
 		} else if (attribute instanceof SignatureAttribute) {
 			ClassVisitorReader reader = this.reader;
 			reader.cv.visitSignature(reader.constantPool.get(((SignatureAttribute) attribute).signatureIndex(), Tag.Utf8).value());
+		} else if (attribute instanceof RuntimeAnnotationsAttribute) {
+			ClassVisitorReader reader = this.reader;
+			VisitorHelper.visitAnnotations(reader.constantPool, reader.cv, (RuntimeAnnotationsAttribute) attribute);
 		}
 	}
 

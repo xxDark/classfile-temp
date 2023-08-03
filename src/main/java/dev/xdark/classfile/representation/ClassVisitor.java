@@ -7,7 +7,7 @@ import dev.xdark.classfile.type.MethodType;
 
 import java.util.List;
 
-public interface ClassVisitor extends Attributable {
+public interface ClassVisitor extends Attributable, Annotatable {
 
 	void visitVersion(ClassFileVersion version);
 

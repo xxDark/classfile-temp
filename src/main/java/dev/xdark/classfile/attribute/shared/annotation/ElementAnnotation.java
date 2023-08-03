@@ -12,6 +12,9 @@ public interface ElementAnnotation extends Element {
 
 	List<Element> values();
 
+	void accept(AnnotationVisitor visitor);
+
+	@Override
 	ElementDescriptor<ElementAnnotation> descriptor();
 
 	static ElementAnnotation create(int typeIndex, int[] nameIndices, List<Element> values) {

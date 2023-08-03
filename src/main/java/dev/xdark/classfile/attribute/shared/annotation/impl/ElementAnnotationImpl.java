@@ -1,13 +1,17 @@
 package dev.xdark.classfile.attribute.shared.annotation.impl;
 
 import dev.xdark.classfile.BadClassFileFormatException;
+import dev.xdark.classfile.attribute.shared.annotation.AnnotationVisitor;
+import dev.xdark.classfile.attribute.shared.annotation.ArrayVisitor;
 import dev.xdark.classfile.attribute.shared.annotation.Element;
 import dev.xdark.classfile.attribute.shared.annotation.ElementAnnotation;
+import dev.xdark.classfile.attribute.shared.annotation.ElementArray;
 import dev.xdark.classfile.attribute.shared.annotation.ElementDescriptor;
 import dev.xdark.classfile.io.Codec;
 import dev.xdark.classfile.io.Input;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public final class ElementAnnotationImpl implements ElementAnnotation {
@@ -34,6 +38,29 @@ public final class ElementAnnotationImpl implements ElementAnnotation {
 	@Override
 	public List<Element> values() {
 		return values;
+	}
+
+	@Override
+	public void accept(AnnotationVisitor visitor) {
+		int[] nameIndices = this.nameIndices;
+		Iterator<Element> iterator = values.iterator();
+		for (int nameIndex : nameIndices) {
+			Element element = iterator.next();
+			if (element instanceof ElementAnnotation) {
+				ElementAnnotation annotation = (ElementAnnotation) element;
+				AnnotationVisitor nested = visitor.visitAnnotation(nameIndex, annotation.typeIndex());
+				if (nested != null) {
+					annotation.accept(nested);
+				}
+			} else if (element instanceof ElementArray) {
+				ArrayVisitor nested = visitor.visitArray(nameIndex);
+				if (nested != null) {
+					((ElementArray) element).accept(nested);
+				}
+			} else {
+				visitor.visit(nameIndex, element);
+			}
+		}
 	}
 
 	@Override

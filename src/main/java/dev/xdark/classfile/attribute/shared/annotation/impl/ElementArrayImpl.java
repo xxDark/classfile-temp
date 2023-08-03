@@ -1,7 +1,10 @@
 package dev.xdark.classfile.attribute.shared.annotation.impl;
 
 import dev.xdark.classfile.BadClassFileFormatException;
+import dev.xdark.classfile.attribute.shared.annotation.AnnotationVisitor;
+import dev.xdark.classfile.attribute.shared.annotation.ArrayVisitor;
 import dev.xdark.classfile.attribute.shared.annotation.Element;
+import dev.xdark.classfile.attribute.shared.annotation.ElementAnnotation;
 import dev.xdark.classfile.attribute.shared.annotation.ElementArray;
 import dev.xdark.classfile.attribute.shared.annotation.ElementDescriptor;
 import dev.xdark.classfile.io.Codec;
@@ -20,6 +23,27 @@ public final class ElementArrayImpl implements ElementArray {
 	@Override
 	public List<Element> elements() {
 		return elements;
+	}
+
+	@Override
+	public void accept(ArrayVisitor visitor) {
+		for (Element element : elements) {
+			if (element instanceof ElementAnnotation) {
+				ElementAnnotation annotation = (ElementAnnotation) element;
+				AnnotationVisitor nested = visitor.visitAnnotation(annotation.typeIndex());
+				if (nested != null) {
+					annotation.accept(nested);
+				}
+			} else if (element instanceof ElementArray) {
+				ElementArray array = (ElementArray) element;
+				ArrayVisitor nested = visitor.visitArray();
+				if (nested != null) {
+					array.accept(nested);
+				}
+			} else {
+				visitor.visit(element);
+			}
+		}
 	}
 
 	@Override

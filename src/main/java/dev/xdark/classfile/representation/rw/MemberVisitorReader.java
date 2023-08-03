@@ -6,6 +6,7 @@ import dev.xdark.classfile.attribute.AttributesVisitor;
 import dev.xdark.classfile.attribute.SpecAttribute;
 import dev.xdark.classfile.attribute.UnknownAttribute;
 import dev.xdark.classfile.attribute.shared.SignatureAttribute;
+import dev.xdark.classfile.attribute.shared.annotation.RuntimeAnnotationsAttribute;
 import dev.xdark.classfile.constantpool.Tag;
 import dev.xdark.classfile.representation.SymbolTable;
 import dev.xdark.classfile.representation.UnrecognizedAttribute;
@@ -25,6 +26,8 @@ class MemberVisitorReader implements MemberVisitor, Attributable, AttributesVisi
 	public void visit(int nameIndex, SpecAttribute attribute) {
 		if (attribute instanceof SignatureAttribute) {
 			mv.visitSignature(symbolTable.constantPool().get(((SignatureAttribute) attribute).signatureIndex(), Tag.Utf8).value());
+		} else if (attribute instanceof RuntimeAnnotationsAttribute) {
+			VisitorHelper.visitAnnotations(symbolTable.constantPool(), mv, (RuntimeAnnotationsAttribute) attribute);
 		}
 	}
 
