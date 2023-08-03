@@ -39,5 +39,6 @@ public final class AnnotationArrayVisitorWriter implements ValueArrayVisitor {
 
 	@Override
 	public void visitEnd() {
+		visitor.visitEnd();
 	}
 }
