@@ -9,4 +9,6 @@ public interface ValueArrayVisitor {
 	AnnotationContainerVisitor visitAnnotation(InstanceType type);
 
 	ValueArrayVisitor visitArray();
+
+	void visitEnd();
 }

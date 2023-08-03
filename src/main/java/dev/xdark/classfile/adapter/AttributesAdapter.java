@@ -19,7 +19,7 @@ public abstract class AttributesAdapter implements AttributesVisitor {
 	}
 
 	@Override
-	public void visit(int nameIndex, UnknownAttribute attribute) throws IOException {
+	public void visit(int nameIndex, UnknownAttribute attribute) {
 		av.visit(nameIndex, attribute);
 	}
 }

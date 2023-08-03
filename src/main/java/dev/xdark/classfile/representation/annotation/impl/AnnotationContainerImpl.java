@@ -57,6 +57,7 @@ public final class AnnotationContainerImpl implements AnnotationContainer, Value
 				visitor.visit(name, value);
 			}
 		}
+		visitor.visitEnd();
 	}
 
 	@Override

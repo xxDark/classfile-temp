@@ -1,8 +1,7 @@
 package dev.xdark.classfile.representation.model.impl;
 
-import dev.xdark.classfile.representation.annotation.AnnotationContainer;
+import dev.xdark.classfile.representation.FieldVisitor;
 import dev.xdark.classfile.representation.model.FieldModel;
-import dev.xdark.classfile.representation.UnrecognizedAttribute;
 import dev.xdark.classfile.representation.entity.constant.LoadableConstant;
 import dev.xdark.classfile.type.ClassType;
 
@@ -27,5 +26,11 @@ final class FieldModelImpl extends MemberModelImpl implements FieldModel {
 	@Override
 	public LoadableConstant constantValue() {
 		return constantValue;
+	}
+
+	@Override
+	public void accept(FieldVisitor visitor) {
+		super.accept(visitor);
+		visitor.visitConstantValue(constantValue);
 	}
 }

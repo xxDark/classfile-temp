@@ -1,9 +1,14 @@
 package dev.xdark.classfile.representation.rw;
 
+import dev.xdark.classfile.attribute.AttributeInfo;
+import dev.xdark.classfile.attribute.AttributesVisitor;
+import dev.xdark.classfile.attribute.shared.SignatureAttribute;
 import dev.xdark.classfile.attribute.shared.annotation.ElementAnnotation;
 import dev.xdark.classfile.attribute.shared.annotation.RuntimeAnnotationsAttribute;
 import dev.xdark.classfile.attribute.shared.annotation.RuntimeVisibleAnnotationsAttribute;
 import dev.xdark.classfile.constantpool.ConstantPool;
+import dev.xdark.classfile.constantpool.ConstantUtf8;
+import dev.xdark.classfile.constantpool.MutableConstantPool;
 import dev.xdark.classfile.constantpool.Tag;
 import dev.xdark.classfile.representation.Annotatable;
 import dev.xdark.classfile.representation.AnnotationsVisitor;
@@ -32,5 +37,12 @@ final class VisitorHelper {
 				}
 			}
 		}
+	}
+
+	static void writeSignature(MutableConstantPool constantPool, AttributesVisitor visitor, String signature) {
+		if (visitor == null) {
+			return;
+		}
+		visitor.visit(constantPool.add(ConstantUtf8.create(AttributeInfo.Signature.name())), SignatureAttribute.create(signature == null ? 0 : constantPool.add(ConstantUtf8.create(signature))));
 	}
 }

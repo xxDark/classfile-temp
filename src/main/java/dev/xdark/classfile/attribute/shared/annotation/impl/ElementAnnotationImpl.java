@@ -63,6 +63,7 @@ public final class ElementAnnotationImpl implements ElementAnnotation, ElementIn
 				visitor.visit(nameIndex, element);
 			}
 		}
+		visitor.visitEnd();
 	}
 
 	@Override

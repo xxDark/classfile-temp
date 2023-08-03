@@ -10,7 +10,7 @@ import dev.xdark.classfile.io.VariableSkip;
 public final class ConstantValueAttributeImpl implements ConstantValueAttribute {
 	private final int constantIndex;
 
-	ConstantValueAttributeImpl(int constantIndex) {
+	public ConstantValueAttributeImpl(int constantIndex) {
 		this.constantIndex = constantIndex;
 	}
 

@@ -1,5 +1,6 @@
 package dev.xdark.classfile.representation.model.impl;
 
+import dev.xdark.classfile.representation.MemberVisitor;
 import dev.xdark.classfile.representation.model.MemberModel;
 import dev.xdark.classfile.type.Type;
 
@@ -40,5 +41,10 @@ abstract class MemberModelImpl extends BaseImpl implements MemberModel {
 	@Override
 	public final String signature() {
 		return signature;
+	}
+
+	protected final void accept(MemberVisitor visitor) {
+		visitor.visitSignature(signature);
+		ModelHelper.accept(visitor, this);
 	}
 }

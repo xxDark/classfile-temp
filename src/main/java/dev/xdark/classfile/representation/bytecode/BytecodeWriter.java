@@ -392,7 +392,7 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 
 	@Override
 	public void label(Label label) {
-		((LabelImpl) label).setPosition((int) output.position());
+		label.setPosition((int) output.position());
 	}
 
 	@Override
@@ -549,7 +549,7 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 	public void return_(ClassType type) {
 		dev.xdark.classfile.bytecode.BytecodeVisitor writer = this.writer;
 		if (type instanceof ObjectType) {
-			writer.return_();
+			writer.areturn();
 		} else {
 			switch (((PrimitiveType) type).kind()) {
 				case T_BOOLEAN:
@@ -710,9 +710,9 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 	private void ldc(int idx) {
 		dev.xdark.classfile.bytecode.BytecodeVisitor writer = this.writer;
 		if (idx > 255) {
-			writer.ldc(idx);
-		} else {
 			writer.ldc_w(idx);
+		} else {
+			writer.ldc(idx);
 		}
 	}
 

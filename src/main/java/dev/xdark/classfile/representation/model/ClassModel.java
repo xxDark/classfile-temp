@@ -3,6 +3,7 @@ package dev.xdark.classfile.representation.model;
 import dev.xdark.classfile.ClassFileVersion;
 import dev.xdark.classfile.representation.Accessible;
 import dev.xdark.classfile.representation.Attributed;
+import dev.xdark.classfile.representation.ClassVisitor;
 import dev.xdark.classfile.representation.Signed;
 import dev.xdark.classfile.representation.Typed;
 import dev.xdark.classfile.type.InstanceType;
@@ -24,5 +25,5 @@ public interface ClassModel extends Accessible, Typed, Signed, Attributed, Annot
 
 	List<FieldModel> fields();
 
-	void accept(ClassModelDumper dumper);
+	void accept(ClassVisitor visitor);
 }

@@ -51,6 +51,10 @@ final class AnnotationsCollector implements AnnotationsVisitor {
 			container.values().put(name, nested);
 			return new ArrayVisitor(nested);
 		}
+
+		@Override
+		public void visitEnd() {
+		}
 	}
 
 	private static final class ArrayVisitor implements ValueArrayVisitor {
@@ -77,6 +81,10 @@ final class AnnotationsCollector implements AnnotationsVisitor {
 			ValueArray nested = ValueArray.create(new ArrayList<>());
 			array.values().add(nested);
 			return new ArrayVisitor(nested);
+		}
+
+		@Override
+		public void visitEnd() {
 		}
 	}
 }

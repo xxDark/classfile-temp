@@ -13,6 +13,6 @@ public class AttributesVisitorSkeleton implements AttributesVisitor {
 	}
 
 	@Override
-	public void visit(int nameIndex, UnknownAttribute attribute) throws IOException {
+	public void visit(int nameIndex, UnknownAttribute attribute) {
 	}
 }

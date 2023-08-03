@@ -3,8 +3,6 @@ package dev.xdark.classfile.representation.impl;
 import dev.xdark.classfile.io.BinaryInput;
 import dev.xdark.classfile.representation.UnrecognizedAttribute;
 
-import java.io.IOException;
-
 public final class UnrecognizedAttributeImpl implements UnrecognizedAttribute {
 	private final String name;
 	private final BinaryInput payload;
@@ -20,7 +18,7 @@ public final class UnrecognizedAttributeImpl implements UnrecognizedAttribute {
 	}
 
 	@Override
-	public BinaryInput payload() throws IOException {
+	public BinaryInput payload() {
 		return payload.duplicate();
 	}
 }

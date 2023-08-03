@@ -8,7 +8,7 @@ import java.io.IOException;
 public interface UnknownAttribute extends Attribute {
 	Codec<UnknownAttribute> CODEC = UnknownAttributeImpl.codec();
 
-	BinaryInput payload() throws IOException;
+	BinaryInput payload();
 
 	static UnknownAttribute create(BinaryInput payload) {
 		return new UnknownAttributeImpl(payload);

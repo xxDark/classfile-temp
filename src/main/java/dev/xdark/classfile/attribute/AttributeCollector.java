@@ -16,7 +16,7 @@ public final class AttributeCollector implements AttributesVisitor {
 	}
 
 	@Override
-	public void visit(int nameIndex, UnknownAttribute attribute) throws IOException {
+	public void visit(int nameIndex, UnknownAttribute attribute) {
 		consumer.accept(new IndexedAttribute(nameIndex, attribute));
 	}
 }

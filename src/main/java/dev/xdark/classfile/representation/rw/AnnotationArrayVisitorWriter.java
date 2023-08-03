@@ -36,4 +36,8 @@ public final class AnnotationArrayVisitorWriter implements ValueArrayVisitor {
 		ArrayVisitor visitor = this.visitor.visitArray();
 		return visitor == null ? null : new AnnotationArrayVisitorWriter(constantPool, visitor);
 	}
+
+	@Override
+	public void visitEnd() {
+	}
 }

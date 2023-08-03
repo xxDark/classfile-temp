@@ -32,7 +32,7 @@ class MemberVisitorReader implements MemberVisitor, Attributable, AttributesVisi
 	}
 
 	@Override
-	public final void visit(int nameIndex, UnknownAttribute attribute) throws IOException {
+	public final void visit(int nameIndex, UnknownAttribute attribute) {
 		dev.xdark.classfile.representation.AttributesVisitor av = mv.visitAttributes();
 		if (av != null) {
 			av.visit(UnrecognizedAttribute.create(symbolTable.constantPool().get(nameIndex, Tag.Utf8).value(), attribute.payload()));

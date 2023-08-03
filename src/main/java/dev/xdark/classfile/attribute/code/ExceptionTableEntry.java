@@ -13,4 +13,8 @@ public interface ExceptionTableEntry {
 	int handler();
 
 	int typeIndex();
+
+	static ExceptionTableEntry create(int start, int end, int handler, int typeIndex) {
+		return new ExceptionTableEntryImpl(start, end, handler, typeIndex);
+	}
 }

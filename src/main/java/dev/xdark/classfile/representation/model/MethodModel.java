@@ -1,5 +1,6 @@
 package dev.xdark.classfile.representation.model;
 
+import dev.xdark.classfile.representation.MethodVisitor;
 import dev.xdark.classfile.representation.TryCatchBlock;
 import dev.xdark.classfile.type.MethodType;
 
@@ -13,4 +14,6 @@ public interface MethodModel extends MemberModel {
 	CodeModel code();
 
 	List<TryCatchBlock> tryCatchBlocks();
+
+	void accept(MethodVisitor visitor);
 }

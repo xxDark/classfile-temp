@@ -8,7 +8,7 @@ import dev.xdark.classfile.io.Input;
 public final class ExceptionTableEntryImpl implements ExceptionTableEntry {
 	private final int start, end, handler, typeIndex;
 
-	ExceptionTableEntryImpl(int start, int end, int handler, int typeIndex) {
+	public ExceptionTableEntryImpl(int start, int end, int handler, int typeIndex) {
 		this.start = start;
 		this.end = end;
 		this.handler = handler;

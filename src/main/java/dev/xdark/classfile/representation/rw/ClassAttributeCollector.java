@@ -9,8 +9,6 @@ import dev.xdark.classfile.attribute.shared.annotation.RuntimeAnnotationsAttribu
 import dev.xdark.classfile.constantpool.Tag;
 import dev.xdark.classfile.representation.UnrecognizedAttribute;
 
-import java.io.IOException;
-
 final class ClassAttributeCollector implements AttributesVisitor {
 	private final ClassVisitorReader reader;
 
@@ -32,7 +30,7 @@ final class ClassAttributeCollector implements AttributesVisitor {
 	}
 
 	@Override
-	public void visit(int nameIndex, UnknownAttribute attribute) throws IOException {
+	public void visit(int nameIndex, UnknownAttribute attribute) {
 		ClassVisitorReader reader = this.reader;
 		dev.xdark.classfile.representation.AttributesVisitor attributes = reader.cv.visitAttributes();
 		if (attributes != null) {

@@ -41,4 +41,9 @@ public final class AnnotationVisitorWriter implements AnnotationContainerVisitor
 		ArrayVisitor visitor = this.visitor.visitArray(constantPool.add(ConstantUtf8.create(name)));
 		return visitor == null ? null : new AnnotationArrayVisitorWriter(constantPool, visitor);
 	}
+
+	@Override
+	public void visitEnd() {
+		visitor.visitEnd();
+	}
 }

@@ -46,6 +46,7 @@ public final class ElementArrayImpl implements ElementArray, ElementInternal {
 				visitor.visit(element);
 			}
 		}
+		visitor.visitEnd();
 	}
 
 	@Override

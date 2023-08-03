@@ -7,4 +7,6 @@ public interface AnnotationVisitor {
 	AnnotationVisitor visitAnnotation(int nameIndex, int typeIndex);
 
 	ArrayVisitor visitArray(int nameIndex);
+
+	void visitEnd();
 }

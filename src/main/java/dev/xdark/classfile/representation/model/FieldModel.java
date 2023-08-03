@@ -1,5 +1,6 @@
 package dev.xdark.classfile.representation.model;
 
+import dev.xdark.classfile.representation.FieldVisitor;
 import dev.xdark.classfile.representation.entity.constant.LoadableConstant;
 import dev.xdark.classfile.type.ClassType;
 
@@ -9,4 +10,6 @@ public interface FieldModel extends MemberModel {
 	ClassType type();
 
 	LoadableConstant constantValue();
+
+	void accept(FieldVisitor visitor);
 }

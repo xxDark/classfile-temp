@@ -1,8 +1,10 @@
 package dev.xdark.classfile.representation.model.impl;
 
 import dev.xdark.classfile.ClassFileVersion;
+import dev.xdark.classfile.representation.ClassVisitor;
+import dev.xdark.classfile.representation.FieldVisitor;
+import dev.xdark.classfile.representation.MethodVisitor;
 import dev.xdark.classfile.representation.model.ClassModel;
-import dev.xdark.classfile.representation.model.ClassModelDumper;
 import dev.xdark.classfile.representation.model.FieldModel;
 import dev.xdark.classfile.representation.model.MethodModel;
 import dev.xdark.classfile.type.InstanceType;
@@ -65,7 +67,22 @@ final class ClassModelImpl extends BaseImpl implements ClassModel {
 	}
 
 	@Override
-	public void accept(ClassModelDumper dumper) {
-		throw new UnsupportedOperationException();
+	public void accept(ClassVisitor visitor) {
+		visitor.visitVersion(version);
+		visitor.visitHeader(accessFlags, type, superType, interfaces);
+		for (FieldModel field : fields) {
+			FieldVisitor fv = visitor.visitField(field.accessFlags(), field.name(), field.type());
+			if (fv != null) {
+				field.accept(fv);
+			}
+		}
+		for (MethodModel method : methods) {
+			MethodVisitor mv = visitor.visitMethod(method.accessFlags(), method.name(), method.type());
+			if (mv != null) {
+				method.accept(mv);
+			}
+		}
+		visitor.visitSignature(signature);
+		ModelHelper.accept(visitor, this);
 	}
 }

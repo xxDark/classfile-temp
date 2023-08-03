@@ -36,4 +36,9 @@ public final class AnnotationArrayVisitorReader implements ArrayVisitor {
 		ValueArrayVisitor visitor = av.visitArray();
 		return visitor == null ? null : new AnnotationArrayVisitorReader(constantPool, visitor);
 	}
+
+	@Override
+	public void visitEnd() {
+		av.visitEnd();
+	}
 }
