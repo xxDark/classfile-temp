@@ -7,14 +7,16 @@ import dev.xdark.classfile.attribute.shared.annotation.Element;
 import dev.xdark.classfile.attribute.shared.annotation.ElementAnnotation;
 import dev.xdark.classfile.attribute.shared.annotation.ElementArray;
 import dev.xdark.classfile.attribute.shared.annotation.ElementDescriptor;
+import dev.xdark.classfile.constantpool.ConstantPool;
 import dev.xdark.classfile.io.Codec;
 import dev.xdark.classfile.io.Input;
+import dev.xdark.classfile.representation.annotation.AnnotationValue;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public final class ElementAnnotationImpl implements ElementAnnotation {
+public final class ElementAnnotationImpl implements ElementAnnotation, ElementInternal {
 	private final int typeIndex;
 	private final int[] nameIndices;
 	private final List<Element> values;
@@ -66,6 +68,11 @@ public final class ElementAnnotationImpl implements ElementAnnotation {
 	@Override
 	public ElementDescriptor<ElementAnnotation> descriptor() {
 		return ElementDescriptor.ANNOTATION;
+	}
+
+	@Override
+	public AnnotationValue normalise(ConstantPool constantPool) {
+		throw new UnsupportedOperationException("Should've been normalised at call site");
 	}
 
 	public static Codec<ElementAnnotation> codec() {

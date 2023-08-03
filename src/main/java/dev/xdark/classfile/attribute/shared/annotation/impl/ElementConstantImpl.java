@@ -9,7 +9,7 @@ import java.util.function.IntFunction;
 
 abstract class ElementConstantImpl implements ElementConstant {
 
-	private final int constantIndex;
+	protected final int constantIndex;
 
 	ElementConstantImpl(int constantIndex) {
 		this.constantIndex = constantIndex;
