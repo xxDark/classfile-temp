@@ -40,9 +40,9 @@ final class VisitorHelper {
 	}
 
 	static void writeSignature(MutableConstantPool constantPool, AttributesVisitor visitor, String signature) {
-		if (visitor == null) {
+		if (visitor == null || signature == null) {
 			return;
 		}
-		visitor.visit(constantPool.add(ConstantUtf8.create(AttributeInfo.Signature.name())), SignatureAttribute.create(signature == null ? 0 : constantPool.add(ConstantUtf8.create(signature))));
+		visitor.visit(constantPool.add(ConstantUtf8.create(AttributeInfo.Signature.name())), SignatureAttribute.create(constantPool.add(ConstantUtf8.create(signature))));
 	}
 }

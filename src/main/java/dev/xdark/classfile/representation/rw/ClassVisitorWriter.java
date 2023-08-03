@@ -111,6 +111,15 @@ public final class ClassVisitorWriter extends AnnotatableWriter implements Class
 		for (MethodVisitorWriter method : methods) {
 			method.close();
 		}
+		dev.xdark.classfile.attribute.AttributesVisitor attrs = cv.visitAttributes();
+		if (attrs == null) {
+			return;
+		}
+		MutableSymbolTable symtab = symbolTable;
+		BootstrapMethodsAttribute attr = symtab.bootstrapMethodsAttribute();
+		if (!attr.bootstrapMethods().isEmpty()) {
+			attrs.visit(symtab.constantPool().add(ConstantUtf8.create(attr.info().name())), attr);
+		}
 	}
 
 	private static int addClass(MutableConstantPool constantPool, InstanceType type) {
