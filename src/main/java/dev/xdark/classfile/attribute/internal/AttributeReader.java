@@ -1,22 +1,22 @@
 package dev.xdark.classfile.attribute.internal;
 
+import dev.xdark.classfile.io.UncheckedIOException;
 import dev.xdark.classfile.ClassReader;
 import dev.xdark.classfile.attribute.AttributeInfo;
 import dev.xdark.classfile.attribute.AttributeLocation;
 import dev.xdark.classfile.attribute.AttributeMapperResult;
 import dev.xdark.classfile.attribute.AttributeMapperResults;
 import dev.xdark.classfile.attribute.AttributesVisitor;
+import dev.xdark.classfile.attribute.SpecAttribute;
 import dev.xdark.classfile.attribute.UnknownAttribute;
 import dev.xdark.classfile.constantpool.Tag;
-
-import java.io.IOException;
 
 public final class AttributeReader {
 
 	private AttributeReader() {
 	}
 
-	public static void read(ClassReader cr, AttributeLocation location, AttributesVisitor visitor) throws IOException {
+	public static void read(ClassReader cr, AttributeLocation location, AttributesVisitor visitor) {
 		// attribute_info {
 		//    u2 attribute_name_index;
 		//    u4 attribute_length;
@@ -32,17 +32,28 @@ public final class AttributeReader {
 		AttributeInfo<?> info = (AttributeInfo<?>) result;
 		long position = cr.position();
 		long length = cr.fork(position).readAttributeLength();
-		if (info == null) {
+		done:
+		{
+			try_read:
+			if (info != null) {
+				SpecAttribute read;
+				try {
+					read = info.codec().read(cr);
+				} catch (UncheckedIOException ignored) {
+					cr.position(position);
+					break try_read;
+				}
+				visitor.visit(nameIndex, read);
+				break done;
+			}
 			visitor.visit(nameIndex, UnknownAttribute.CODEC.read(cr));
-		} else {
-			visitor.visit(nameIndex, info.codec().read(cr));
 		}
 		if (cr.position() - position - 4L != length) {
 			throw new RuntimeException(String.format("Not the whole attribute was consumed: %s", name));
 		}
 	}
 
-	public static void readAll(ClassReader cr, AttributeLocation location, AttributesVisitor visitor) throws IOException {
+	public static void readAll(ClassReader cr, AttributeLocation location, AttributesVisitor visitor) {
 		//    u2             attributes_count;
 		//    attribute_info attributes[attributes_count];
 		int attrCount = cr.readUnsignedShort();
@@ -51,7 +62,7 @@ public final class AttributeReader {
 		}
 	}
 
-	public static void skip(ClassReader cr) throws IOException {
+	public static void skip(ClassReader cr) {
 		// attribute_info {
 		//    u2 attribute_name_index;
 		//    u4 attribute_length;
@@ -61,7 +72,7 @@ public final class AttributeReader {
 		cr.skipBytes(cr.readAttributeLength());
 	}
 
-	public static void skipAll(ClassReader cr) throws IOException {
+	public static void skipAll(ClassReader cr) {
 		//    u2             attributes_count;
 		//    attribute_info attributes[attributes_count];
 		int attrCount = cr.readUnsignedShort();

@@ -6,8 +6,6 @@ import dev.xdark.classfile.constantpool.MutableConstantPool;
 import dev.xdark.classfile.io.BinaryOutput;
 import dev.xdark.classfile.io.ClassWriter;
 
-import java.io.IOException;
-
 final class ClassWriterImpl implements ClassWriter {
 	private final BinaryOutput output;
 	private final ClassFileVersion version;
@@ -42,62 +40,62 @@ final class ClassWriterImpl implements ClassWriter {
 	}
 
 	@Override
-	public void position(long position) throws IOException {
+	public void position(long position) {
 		output.position(position);
 	}
 
 	@Override
-	public void writeByte(int value) throws IOException {
+	public void writeByte(int value) {
 		output.writeByte(value);
 	}
 
 	@Override
-	public void writeShort(int value) throws IOException {
+	public void writeShort(int value) {
 		output.writeShort(value);
 	}
 
 	@Override
-	public void writeChar(char value) throws IOException {
+	public void writeChar(char value) {
 		output.writeChar(value);
 	}
 
 	@Override
-	public void writeInt(int value) throws IOException {
+	public void writeInt(int value) {
 		output.writeInt(value);
 	}
 
 	@Override
-	public void writeUnsignedInt(long value) throws IOException {
+	public void writeUnsignedInt(long value) {
 		output.writeUnsignedInt(value);
 	}
 
 	@Override
-	public void writeLong(long value) throws IOException {
+	public void writeLong(long value) {
 		output.writeLong(value);
 	}
 
 	@Override
-	public void writeFloat(float value) throws IOException {
+	public void writeFloat(float value) {
 		output.writeFloat(value);
 	}
 
 	@Override
-	public void writeDouble(double value) throws IOException {
+	public void writeDouble(double value) {
 		output.writeDouble(value);
 	}
 
 	@Override
-	public void writeUtf(String utf) throws IOException {
+	public void writeUtf(String utf) {
 		output.writeUtf(utf);
 	}
 
 	@Override
-	public void write(byte[] b, int off, int len) throws IOException {
+	public void write(byte[] b, int off, int len) {
 		output.write(b, off, len);
 	}
 
 	@Override
-	public void write(byte[] b) throws IOException {
+	public void write(byte[] b) {
 		output.write(b);
 	}
 }

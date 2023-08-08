@@ -5,6 +5,8 @@ import dev.xdark.classfile.attribute.code.stackmap.type.VerificationTypeDescript
 import dev.xdark.classfile.io.Codec;
 
 public final class IntegerVariableInfoImpl implements IntegerVariableInfo {
+	public static final IntegerVariableInfo INSTANCE = new IntegerVariableInfoImpl();
+
 	private IntegerVariableInfoImpl() {
 	}
 
@@ -14,6 +16,6 @@ public final class IntegerVariableInfoImpl implements IntegerVariableInfo {
 	}
 
 	public static Codec<IntegerVariableInfo> codec() {
-		return Codec.singleton(new IntegerVariableInfoImpl());
+		return Codec.singleton(INSTANCE);
 	}
 }

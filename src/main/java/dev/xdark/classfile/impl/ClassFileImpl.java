@@ -1,6 +1,6 @@
 package dev.xdark.classfile.impl;
 
-import dev.xdark.classfile.BadClassFileFormatException;
+import dev.xdark.classfile.io.UncheckedIOException;
 import dev.xdark.classfile.ClassAssembler;
 import dev.xdark.classfile.ClassFile;
 import dev.xdark.classfile.ClassFileVersion;
@@ -26,7 +26,6 @@ import dev.xdark.classfile.constantpool.Tag;
 import dev.xdark.classfile.io.BinaryInput;
 import dev.xdark.classfile.ClassVisitor;
 
-import java.io.IOException;
 import java.util.Set;
 
 public final class ClassFileImpl implements ClassFile {
@@ -46,12 +45,12 @@ public final class ClassFileImpl implements ClassFile {
 	}
 
 	@Override
-	public void read(BinaryInput input, ClassVisitor visitor) throws IOException {
+	public void read(BinaryInput input, ClassVisitor visitor) {
 		ClassReaderImpl classReader = new ClassReaderImpl(input);
 		{
 			int magic = classReader.readInt();
 			if (MAGIC != magic) {
-				throw new BadClassFileFormatException(String.format("Bad classfile magic %d", magic));
+				throw new UncheckedIOException(String.format("Bad classfile magic %d", magic));
 			}
 		}
 		{
@@ -75,7 +74,7 @@ public final class ClassFileImpl implements ClassFile {
 				int rawTag = fork.readUnsignedByte();
 				Tag<?> tag = Tag.byId(rawTag);
 				if (tag == null) {
-					throw new BadClassFileFormatException(String.format("Unknown constant pool tag %d", rawTag));
+					throw new UncheckedIOException(String.format("Unknown constant pool tag %d", rawTag));
 				}
 				cpPositions[off++] = fork.position();
 				tag.codec().skip(fork);
@@ -141,7 +140,7 @@ public final class ClassFileImpl implements ClassFile {
 				int rawTag = classReader.readUnsignedByte();
 				Tag<?> tag = Tag.byId(rawTag);
 				if (tag == null) {
-					throw new BadClassFileFormatException(String.format("Unknown constant pool tag %d", rawTag));
+					throw new UncheckedIOException(String.format("Unknown constant pool tag %d", rawTag));
 				}
 				Constant constant = tag.codec().read(classReader);
 				constantPool.add(constant);
@@ -185,7 +184,7 @@ public final class ClassFileImpl implements ClassFile {
 		return newAssembler(null);
 	}
 
-	private static void visitMembers(AttributeLocation location, ClassReader cr, ClassVisitor cv, VisitMember visitMember) throws IOException {
+	private static void visitMembers(AttributeLocation location, ClassReader cr, ClassVisitor cv, VisitMember visitMember) {
 		int methodCount = cr.readUnsignedShort();
 		while (methodCount-- != 0) {
 			int accessFlags = cr.readAccessFlags();

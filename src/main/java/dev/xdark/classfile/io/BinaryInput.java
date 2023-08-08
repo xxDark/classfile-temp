@@ -1,46 +1,44 @@
 package dev.xdark.classfile.io;
 
-import java.io.IOException;
-
 public interface BinaryInput {
 
 	long position();
 
-	void position(long position) throws IOException;
+	void position(long position);
 
-	BinaryInput fork(long position) throws IOException;
+	BinaryInput fork(long position);
 
 	BinaryInput duplicate();
 
-	void limit(long limit) throws IOException;
+	void limit(long limit);
 
-	int readByte() throws IOException;
+	int readByte();
 
-	int readUnsignedByte() throws IOException;
+	int readUnsignedByte();
 
-	int readShort() throws IOException;
+	int readShort();
 
-	int readUnsignedShort() throws IOException;
+	int readUnsignedShort();
 
-	char readChar() throws IOException;
+	char readChar();
 
-	int readInt() throws IOException;
+	int readInt();
 
-	long readUnsignedInt() throws IOException;
+	long readUnsignedInt();
 
-	long readLong() throws IOException;
+	long readLong();
 
-	float readFloat() throws IOException;
+	float readFloat();
 
-	double readDouble() throws IOException;
+	double readDouble();
 
-	int read(byte[] b, int off, int len) throws IOException;
+	int read(byte[] b, int off, int len);
 
-	void readFully(byte[] b, int off, int len) throws IOException;
+	void readFully(byte[] b, int off, int len);
 
-	String readUtf() throws IOException;
+	String readUtf();
 
-	long skip(long bytes) throws IOException;
+	long skip(long bytes);
 
 	boolean isReadable(long bytes);
 
@@ -51,30 +49,27 @@ public interface BinaryInput {
 	 * <br>
 	 * E.g. if reading from a file,
 	 * this method should copy contents of this input
-	 * to the heap so i.e. if {@link BinaryInput#close()} is called,
-	 * whatever was left in this input would still be valid
-	 * and available for read.
+	 * to the heap.
 	 *
 	 * @return Detached input.
-	 * @throws IOException If any I/O error occurs.
 	 */
-	BinaryInput detach() throws IOException;
+	BinaryInput detach();
 
-	default int read(byte[] b) throws IOException {
+	default int read(byte[] b) {
 		return read(b, 0, b.length);
 	}
 
-	default void readFully(byte[] b) throws IOException {
+	default void readFully(byte[] b) {
 		readFully(b, 0, b.length);
 	}
 
-	default void skipBytes(long bytes) throws IOException {
+	default void skipBytes(long bytes) {
 		long skippedTotal = 0L;
 		long bookkeep = bytes;
 		while (bytes > 0L) {
 			long skipped = skip(bytes);
 			if (skipped == 0L) {
-				throw new IOException(String.format("Did not skip all bytes: %d > %d", bookkeep, skippedTotal));
+				throw new IllegalStateException(String.format("Did not skip all bytes: %d > %d", bookkeep, skippedTotal));
 			}
 			bytes -= skipped;
 			skippedTotal += skipped;

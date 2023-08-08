@@ -79,7 +79,7 @@ public final class ClassAssemblerImpl extends AttributableImpl implements ClassA
 
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	@Override
-	public void dump(BinaryOutput output) throws IOException {
+	public void dump(BinaryOutput output) {
 		MutableConstantPool cp = constantPool;
 		ClassWriter writer = new ClassWriterImpl(output, version, cp, attributeMapper);
 		writer.writeInt(ClassFile.MAGIC);
@@ -103,7 +103,7 @@ public final class ClassAssemblerImpl extends AttributableImpl implements ClassA
 		AttributeWriter.writeAll(writer, attributes);
 	}
 
-	private static void writeMembers(ClassWriter writer, List<? extends MemberVisitorImpl> list) throws IOException {
+	private static void writeMembers(ClassWriter writer, List<? extends MemberVisitorImpl> list) {
 		writer.writeShort(list.size());
 		for (MemberVisitorImpl member : list) {
 			writer.writeAccessFlags(member.accessFlags);

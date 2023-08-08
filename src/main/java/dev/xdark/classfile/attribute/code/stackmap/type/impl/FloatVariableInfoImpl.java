@@ -5,6 +5,8 @@ import dev.xdark.classfile.attribute.code.stackmap.type.VerificationTypeDescript
 import dev.xdark.classfile.io.Codec;
 
 public final class FloatVariableInfoImpl implements FloatVariableInfo {
+	public static final FloatVariableInfoImpl INSTANCE = new FloatVariableInfoImpl();
+
 	private FloatVariableInfoImpl() {
 	}
 
@@ -14,6 +16,6 @@ public final class FloatVariableInfoImpl implements FloatVariableInfo {
 	}
 
 	public static Codec<FloatVariableInfo> codec() {
-		return Codec.singleton(new FloatVariableInfoImpl());
+		return Codec.singleton(INSTANCE);
 	}
 }

@@ -5,6 +5,8 @@ import dev.xdark.classfile.attribute.code.stackmap.type.VerificationTypeDescript
 import dev.xdark.classfile.io.Codec;
 
 public final class TopVariableInfoImpl implements TopVariableInfo {
+	public static final TopVariableInfo INSTANCE = new TopVariableInfoImpl();
+
 	private TopVariableInfoImpl() {
 	}
 
@@ -14,6 +16,6 @@ public final class TopVariableInfoImpl implements TopVariableInfo {
 	}
 
 	public static Codec<TopVariableInfo> codec() {
-		return Codec.singleton(new TopVariableInfoImpl());
+		return Codec.singleton(INSTANCE);
 	}
 }

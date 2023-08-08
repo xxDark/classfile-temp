@@ -3,7 +3,6 @@ package dev.xdark.classfile.constantpool;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 public final class BasicConstantPool implements MutableConstantPool {
@@ -59,7 +58,7 @@ public final class BasicConstantPool implements MutableConstantPool {
 
 	@Override
 	public Iterator<Constant> iterator() {
-		return stream().filter(Objects::nonNull).iterator();
+		return constants.iterator();
 	}
 
 	@Override

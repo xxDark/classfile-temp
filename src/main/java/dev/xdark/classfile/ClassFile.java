@@ -13,7 +13,7 @@ import java.util.Set;
 public interface ClassFile {
 	int MAGIC = 0xcafebabe;
 
-	void read(BinaryInput input, ClassVisitor visitor) throws IOException;
+	void read(BinaryInput input, ClassVisitor visitor);
 
 	ClassAssembler newAssembler(ConstantPool constantPool);
 

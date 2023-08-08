@@ -907,35 +907,27 @@ public final class BytecodeWriter implements BytecodeVisitor {
 	@Override
 	public void table_switch(int defaultBranchOffset, int low, int high, BinaryInput offsets) {
 		putByte(TABLESWITCH);
-		try {
-			BinaryOutput out = output;
-			long pos = out.position();
-			out.position(pos + (4L - pos & 3L));
-			out.writeInt(defaultBranchOffset);
-			out.writeInt(low);
-			out.writeInt(high);
-			while (offsets.isReadable(1L)) {
-				out.writeInt(offsets.readInt());
-			}
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+		BinaryOutput out = output;
+		long pos = out.position();
+		out.position(pos + (4L - pos & 3L));
+		out.writeInt(defaultBranchOffset);
+		out.writeInt(low);
+		out.writeInt(high);
+		while (offsets.isReadable(1L)) {
+			out.writeInt(offsets.readInt());
 		}
 	}
 
 	@Override
 	public void lookup_switch(int defaultBranchOffset, BinaryInput pairs) {
 		putByte(LOOKUPSWITCH);
-		try {
-			BinaryOutput out = output;
-			long pos = out.position();
-			out.position(pos + (4L - pos & 3L));
-			out.writeInt(defaultBranchOffset);
-			out.writeInt((int) (pairs.readableBytes() >>> 3));
-			while (pairs.isReadable(1L)) {
-				out.writeInt(pairs.readInt());
-			}
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+		BinaryOutput out = output;
+		long pos = out.position();
+		out.position(pos + (4L - pos & 3L));
+		out.writeInt(defaultBranchOffset);
+		out.writeInt((int) (pairs.readableBytes() >>> 3));
+		while (pairs.isReadable(1L)) {
+			out.writeInt(pairs.readInt());
 		}
 	}
 
@@ -1155,27 +1147,15 @@ public final class BytecodeWriter implements BytecodeVisitor {
 	}
 
 	private void putByte(int op) {
-		try {
-			output.writeByte(op);
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		output.writeByte(op);
 	}
 
 	private void putShort(int op) {
-		try {
-			output.writeShort(op);
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		output.writeShort(op);
 	}
 
 	private void putInt(int op) {
-		try {
-			output.writeUnsignedInt(op);
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		output.writeInt(op);
 	}
 
 	private static void ensureInRange(int value, int min, int max) {

@@ -14,17 +14,17 @@ final class ThrowingCodec<T> implements Codec<T> {
 	}
 
 	@Override
-	public void write(ClassWriter writer, T value) throws IOException {
+	public void write(ClassWriter writer, T value) {
 		throw_(exceptionSupplier.get());
 	}
 
 	@Override
-	public T read(ClassReader reader) throws IOException {
+	public T read(ClassReader reader) {
 		return throw_(exceptionSupplier.get());
 	}
 
 	@Override
-	public void skip(ClassReader reader) throws IOException {
+	public void skip(ClassReader reader) {
 		throw_(exceptionSupplier.get());
 	}
 

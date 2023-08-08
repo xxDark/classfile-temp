@@ -873,16 +873,12 @@ public final class BytecodeReader implements BytecodeVisitor {
 	@Override
 	public void table_switch(int defaultBranchOffset, int low, int high, BinaryInput offsets) {
 		List<Label> cases = new ArrayList<>();
-		try {
-			int count = 0;
-			while (offsets.isReadable(1L)) {
-				cases.add(require(offsets.readInt()));
-				if (count++ == 16384) {
-					throw new IllegalStateException("Too many switch cases");
-				}
+		int count = 0;
+		while (offsets.isReadable(1L)) {
+			cases.add(require(offsets.readInt()));
+			if (count++ == 16384) {
+				throw new IllegalStateException("Too many switch cases");
 			}
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
 		}
 		bv.tableSwitch(require(defaultBranchOffset), low, high, cases);
 	}
@@ -895,13 +891,9 @@ public final class BytecodeReader implements BytecodeVisitor {
 		}
 		int[] keys = new int[npairs];
 		Label[] cases = new Label[npairs];
-		try {
-			for (int i = 0; i < npairs; i++) {
-				keys[i] = pairs.readInt();
-				cases[i] = require(pairs.readInt());
-			}
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+		for (int i = 0; i < npairs; i++) {
+			keys[i] = pairs.readInt();
+			cases[i] = require(pairs.readInt());
 		}
 		bv.lookupSwitch(require(defaultBranchOffset), keys, Arrays.asList(cases));
 	}

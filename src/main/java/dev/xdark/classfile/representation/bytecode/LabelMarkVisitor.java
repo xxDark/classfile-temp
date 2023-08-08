@@ -100,12 +100,8 @@ public final class LabelMarkVisitor extends BytecodeVisitorSkeleton {
 		int pos = positionTracker.position();
 		LabelArray la = labelArray;
 		la.create(pos, defaultBranchOffset);
-		try {
-			while (offsets.isReadable(1L)) {
-				la.create(pos, offsets.readInt());
-			}
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+		while (offsets.isReadable(1L)) {
+			la.create(pos, offsets.readInt());
 		}
 	}
 
@@ -114,13 +110,9 @@ public final class LabelMarkVisitor extends BytecodeVisitorSkeleton {
 		int pos = positionTracker.position();
 		LabelArray la = labelArray;
 		la.create(pos, defaultBranchOffset);
-		try {
-			while (pairs.isReadable(1L)) {
-				pairs.skipBytes(4L);
-				la.create(pos, pairs.readInt());
-			}
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+		while (pairs.isReadable(1L)) {
+			pairs.skipBytes(4L);
+			la.create(pos, pairs.readInt());
 		}
 	}
 

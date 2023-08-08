@@ -1,6 +1,6 @@
 package dev.xdark.classfile.attribute.shared.annotation.impl;
 
-import dev.xdark.classfile.BadClassFileFormatException;
+import dev.xdark.classfile.io.UncheckedIOException;
 import dev.xdark.classfile.attribute.shared.annotation.AnnotationVisitor;
 import dev.xdark.classfile.attribute.shared.annotation.ArrayVisitor;
 import dev.xdark.classfile.attribute.shared.annotation.Element;
@@ -115,7 +115,7 @@ public final class ElementAnnotationImpl implements ElementAnnotation, ElementIn
 					List<Element> values = value.values();
 					int len = names.length;
 					if (len != values.size()) {
-						throw new BadClassFileFormatException("Sizes do not match");
+						throw new UncheckedIOException("Sizes do not match");
 					}
 					writer.writeShort(len);
 					for (int i = 0; i < len; i++) {

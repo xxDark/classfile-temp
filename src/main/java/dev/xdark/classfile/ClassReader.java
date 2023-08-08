@@ -4,8 +4,6 @@ import dev.xdark.classfile.attribute.AttributeMapper;
 import dev.xdark.classfile.constantpool.ConstantPool;
 import dev.xdark.classfile.io.BinaryInput;
 
-import java.io.IOException;
-
 public interface ClassReader extends BinaryInput {
 
 	ClassFileVersion version();
@@ -15,7 +13,7 @@ public interface ClassReader extends BinaryInput {
 	AttributeMapper attributeMapper();
 
 	@Override
-	ClassReader fork(long position) throws IOException;
+	ClassReader fork(long position);
 
 	@Override
 	ClassReader duplicate();
@@ -24,29 +22,29 @@ public interface ClassReader extends BinaryInput {
 	 * {@inheritDoc}
 	 */
 	@Override
-	ClassReader detach() throws IOException;
+	ClassReader detach();
 
-	default long readUnsignedLong() throws IOException {
+	default long readUnsignedLong() {
 		return Integer.toUnsignedLong(readInt());
 	}
 
-	default int readConstantPoolIndex() throws IOException {
+	default int readConstantPoolIndex() {
 		return readUnsignedShort();
 	}
 
-	default int readAccessFlags() throws IOException {
+	default int readAccessFlags() {
 		return readUnsignedShort();
 	}
 
-	default long readAttributeLength() throws IOException {
+	default long readAttributeLength() {
 		return readUnsignedInt();
 	}
 
-	default void skipConstantPoolIndex() throws IOException {
+	default void skipConstantPoolIndex() {
 		skipBytes(2L);
 	}
 
-	default void skipAttributeLength() throws IOException {
+	default void skipAttributeLength() {
 		skipBytes(4L);
 	}
 }

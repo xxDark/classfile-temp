@@ -1,6 +1,6 @@
 package dev.xdark.classfile.attribute.shared.annotation.impl;
 
-import dev.xdark.classfile.BadClassFileFormatException;
+import dev.xdark.classfile.io.UncheckedIOException;
 import dev.xdark.classfile.attribute.shared.annotation.AnnotationVisitor;
 import dev.xdark.classfile.attribute.shared.annotation.ArrayVisitor;
 import dev.xdark.classfile.attribute.shared.annotation.Element;
@@ -72,7 +72,7 @@ public final class ElementArrayImpl implements ElementArray, ElementInternal {
 				int rawTag = reader.readUnsignedByte();
 				ElementDescriptor<?> descriptor = ElementDescriptor.byTag(rawTag);
 				if (descriptor == null) {
-					throw new BadClassFileFormatException(String.format("Unknown annotation tag %s", (char) rawTag));
+					throw new UncheckedIOException(String.format("Unknown annotation tag %s", (char) rawTag));
 				}
 				elements.add(descriptor.codec().read(reader));
 			}
@@ -83,7 +83,7 @@ public final class ElementArrayImpl implements ElementArray, ElementInternal {
 				int rawTag = reader.readUnsignedByte();
 				ElementDescriptor<?> descriptor = ElementDescriptor.byTag(rawTag);
 				if (descriptor == null) {
-					throw new BadClassFileFormatException(String.format("Unknown annotation tag %s", (char) rawTag));
+					throw new UncheckedIOException(String.format("Unknown annotation tag %s", (char) rawTag));
 				}
 				descriptor.codec().skip(reader);
 			}

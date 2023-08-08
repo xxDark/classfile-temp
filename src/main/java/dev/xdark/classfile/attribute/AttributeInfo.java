@@ -5,6 +5,8 @@ import dev.xdark.classfile.attribute.code.CodeAttribute;
 import dev.xdark.classfile.attribute.code.LineNumberTableAttribute;
 import dev.xdark.classfile.attribute.code.impl.CodeAttributeImpl;
 import dev.xdark.classfile.attribute.code.impl.LineNumberTableAttributeImpl;
+import dev.xdark.classfile.attribute.code.stackmap.StackMapTableAttribute;
+import dev.xdark.classfile.attribute.code.stackmap.inpl.StackMapTableAttributeImpl;
 import dev.xdark.classfile.attribute.field.ConstantValueAttribute;
 import dev.xdark.classfile.attribute.field.impl.ConstantValueAttributeImpl;
 import dev.xdark.classfile.attribute.klass.BootstrapMethodsAttribute;
@@ -82,6 +84,7 @@ public final class AttributeInfo<A extends SpecAttribute> implements AttributeMa
 	public static final AttributeInfo<MethodParametersAttribute> MethodParameters = method("MethodParameters", ClassFileVersion.V8, MethodParametersAttributeImpl.codec());
 	public static final AttributeInfo<AnnotationDefaultAttribute> AnnotationDefault = method("AnnotationDefault", ClassFileVersion.V1_5, AnnotationDefaultAttributeImpl.codec());
 	public static final AttributeInfo<LineNumberTableAttribute> LineNumberTable = code("LineNumberTable", ClassFileVersion.V1_0, LineNumberTableAttributeImpl.codec());
+	public static final AttributeInfo<StackMapTableAttribute> StackMapTable = code("StackMapTable", ClassFileVersion.V6, StackMapTableAttributeImpl.codec());
 
 	private final String name;
 	private final ClassFileVersion introducedVersion;

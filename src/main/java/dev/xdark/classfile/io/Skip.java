@@ -2,11 +2,9 @@ package dev.xdark.classfile.io;
 
 import dev.xdark.classfile.ClassReader;
 
-import java.io.IOException;
-
 public interface Skip {
 
-	void skip(ClassReader reader) throws IOException;
+	void skip(ClassReader reader);
 
 	default Skip then(Skip next) {
 		return reader -> {

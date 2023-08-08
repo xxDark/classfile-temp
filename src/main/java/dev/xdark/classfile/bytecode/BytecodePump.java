@@ -24,11 +24,11 @@ public final class BytecodePump {
 		this(input, visitor, null);
 	}
 
-	public void pumpAll() throws IOException {
+	public void pumpAll() {
 		while (pump()) ;
 	}
 
-	public boolean pump() throws IOException {
+	public boolean pump() {
 		BinaryInput input = this.input;
 		if (input.isReadable(1L)) {
 			BytecodeVisitor v = visitor;

@@ -1,6 +1,6 @@
 package dev.xdark.classfile.representation.bytecode;
 
-import dev.xdark.classfile.BadClassFileFormatException;
+import dev.xdark.classfile.io.UncheckedIOException;
 import dev.xdark.classfile.bytecode.Bytecodes;
 import dev.xdark.classfile.bytecode.PrimitiveConversions;
 import dev.xdark.classfile.constantpool.ConstantClass;
@@ -31,17 +31,14 @@ import dev.xdark.classfile.type.PrimitiveType;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 import static dev.xdark.classfile.bytecode.Bytecodes.LOOKUPSWITCH;
 import static dev.xdark.classfile.bytecode.Bytecodes.TABLESWITCH;
 
 public final class BytecodeWriter implements BytecodeVisitor, Closeable {
-	private final Map<Long, LabelPatch> toPatch = new HashMap<>();
+	private final List<LabelPatch> toPatch = new ArrayList<>();
 	private final MutableSymbolTable symbolTable;
 	private final BinaryOutput output;
 	private final dev.xdark.classfile.bytecode.BytecodeVisitor writer;
@@ -284,74 +281,7 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 
 	@Override
 	public void mathOp(PrimitiveType type, MathOperation op) {
-		int opcode;
-		switch (op) {
-			case ADD:
-				opcode = Bytecodes.IADD;
-				break;
-			case SUB:
-				opcode = Bytecodes.ISUB;
-				break;
-			case MUL:
-				opcode = Bytecodes.IMUL;
-				break;
-			case DIV:
-				opcode = Bytecodes.IDIV;
-				break;
-			case REM:
-				opcode = Bytecodes.IREM;
-				break;
-			case NEG:
-				opcode = Bytecodes.INEG;
-				break;
-			case SHL:
-				opcode = Bytecodes.ISHL;
-				break;
-			case SHR:
-				opcode = Bytecodes.ISHR;
-				break;
-			case USHR:
-				opcode = Bytecodes.IUSHR;
-				break;
-			case AND:
-				opcode = Bytecodes.IAND;
-				break;
-			case OR:
-				opcode = Bytecodes.IOR;
-				break;
-			case XOR:
-				opcode = Bytecodes.IXOR;
-				break;
-			default:
-				throw new IllegalArgumentException(Objects.toString(op));
-		}
-		int off;
-		switch (type.kind()) {
-			case T_BOOLEAN:
-			case T_CHAR:
-			case T_INT:
-			case T_BYTE:
-			case T_SHORT:
-				off = 0;
-				break;
-			case T_FLOAT:
-				off = 2;
-				break;
-			case T_DOUBLE:
-				off = 3;
-				break;
-			case T_LONG:
-				off = 1;
-				break;
-			default:
-				throw new IllegalArgumentException(type.descriptor());
-		}
-		int offset = opcode + off;
-		try {
-			output.writeByte(offset);
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		MathOpsHelper.doOp(writer, op, type.kind());
 	}
 
 	@Override
@@ -402,7 +332,7 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 		if (impl.isResolved()) {
 			offset = impl.getOffset(pos);
 		} else {
-			toPatch.put(pos + 1L, new LabelPatch(label, pos, false));
+			toPatch.add(new LabelPatch(label, pos + 1L, pos, false));
 			offset = -1;
 		}
 		dev.xdark.classfile.bytecode.BytecodeVisitor writer = this.writer;
@@ -442,7 +372,7 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 		if (impl.isResolved()) {
 			offset = impl.getOffset(pos);
 		} else {
-			toPatch.put(pos + 1L, new LabelPatch(label, pos, false));
+			toPatch.add(new LabelPatch(label, pos + 1L, pos, false));
 			offset = -1;
 		}
 		dev.xdark.classfile.bytecode.BytecodeVisitor writer = this.writer;
@@ -481,7 +411,7 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 		if (impl.isResolved()) {
 			writer.goto_w(impl.getOffset(pos));
 		} else {
-			toPatch.put(pos + 1L, new LabelPatch(label, pos, true));
+			toPatch.add(new LabelPatch(label, pos + 1L, pos, true));
 			writer.goto_w(-1);
 		}
 	}
@@ -493,7 +423,7 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 		if (impl.isResolved()) {
 			writer.jsr_w(impl.getOffset(pos));
 		} else {
-			toPatch.put(pos, new LabelPatch(label, pos + 1L, true));
+			toPatch.add(new LabelPatch(label, pos + 1L, pos, true));
 			writer.jsr_w(-1);
 		}
 	}
@@ -506,40 +436,32 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 	@Override
 	public void tableSwitch(Label defaultBranch, int low, int high, List<Label> cases) {
 		long src = output.position();
-		try {
-			BinaryOutput out = output;
-			out.writeByte(TABLESWITCH);
-			long pos = out.position();
-			pos = pos + (4L - pos & 3L);
-			out.position(pos);
-			out.writeInt(getOrPatchSwitch(src, out.position(), defaultBranch));
-			out.writeInt(low);
-			out.writeInt(high);
-			for (Label l : cases) {
-				out.writeInt(getOrPatchSwitch(src, out.position(), l));
-			}
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+		BinaryOutput out = output;
+		out.writeByte(TABLESWITCH);
+		long pos = out.position();
+		pos = pos + (4L - pos & 3L);
+		out.position(pos);
+		out.writeInt(getOrPatchSwitch(src, out.position(), defaultBranch));
+		out.writeInt(low);
+		out.writeInt(high);
+		for (Label l : cases) {
+			out.writeInt(getOrPatchSwitch(src, out.position(), l));
 		}
 	}
 
 	@Override
 	public void lookupSwitch(Label defaultBranch, int[] keys, List<Label> cases) {
 		long src = output.position();
-		try {
-			BinaryOutput out = output;
-			out.writeByte(LOOKUPSWITCH);
-			long pos = out.position();
-			pos = pos + (4L - pos & 3L);
-			out.position(pos);
-			out.writeInt(getOrPatchSwitch(src, out.position(), defaultBranch));
-			out.writeInt(keys.length);
-			for (int i = 0; i < keys.length; i++) {
-				out.writeInt(keys[i]);
-				out.writeInt(getOrPatchSwitch(src, out.position(), cases.get(i)));
-			}
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
+		BinaryOutput out = output;
+		out.writeByte(LOOKUPSWITCH);
+		long pos = out.position();
+		pos = pos + (4L - pos & 3L);
+		out.position(pos);
+		out.writeInt(getOrPatchSwitch(src, out.position(), defaultBranch));
+		out.writeInt(keys.length);
+		for (int i = 0; i < keys.length; i++) {
+			out.writeInt(keys[i]);
+			out.writeInt(getOrPatchSwitch(src, out.position(), cases.get(i)));
 		}
 
 	}
@@ -614,12 +536,8 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 	@Override
 	public void invokeInterface(ObjectType owner, String name, MethodType type) {
 		putMemberInfo(Bytecodes.INVOKEINTERFACE, owner.internalName(), name, type.descriptor(), ConstantInterfaceMethodRef::create);
-		try {
-			output.writeByte(type.parameterTypes().stream().mapToInt(x -> x == PrimitiveType.T_LONG || x == PrimitiveType.T_DOUBLE ? 2 : 1).sum() + 1);
-			output.writeByte(0);
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		output.writeByte(type.parameterTypes().stream().mapToInt(x -> x == PrimitiveType.T_LONG || x == PrimitiveType.T_DOUBLE ? 2 : 1).sum() + 1);
+		output.writeByte(0);
 	}
 
 	@Override
@@ -682,14 +600,13 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 	public void close() throws IOException {
 		BinaryOutput output = this.output;
 		long position = output.position();
-		for (Map.Entry<Long, LabelPatch> entry : toPatch.entrySet()) {
-			LabelPatch patch = entry.getValue();
+		for (LabelPatch patch : toPatch) {
 			LabelImpl label = (LabelImpl) patch.label;
 			if (!label.isResolved()) {
-				throw new BadClassFileFormatException("Unresolved label " + label);
+				throw new UncheckedIOException("Unresolved label " + label);
 			}
-			long jumpAt = entry.getKey();
-			long origin = patch.origin;
+			long jumpAt = patch.jumpPc;
+			long origin = patch.bytecodePc;
 			int labelAt = label.getPosition();
 			output.position(jumpAt);
 			long bytecodePos = origin;
@@ -728,17 +645,13 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 		MutableSymbolTable symbolTable = this.symbolTable;
 		MutableConstantPool constantPool = symbolTable.constantPool();
 		BinaryOutput output = this.output;
-		try {
-			int classIdx = addClass(owner);
-			int nameIdx = constantPool.add(ConstantUtf8.create(name));
-			int descriptorIdx = constantPool.add(ConstantUtf8.create(descriptor));
-			int nameAndTypeIdx = constantPool.add(ConstantNameAndType.create(nameIdx, descriptorIdx));
-			int memberRefIdx = constantPool.add(creator.create(classIdx, nameAndTypeIdx));
-			output.writeByte(opcode);
-			output.writeShort(memberRefIdx);
-		} catch (IOException ex) {
-			throw new UncheckedIOException(ex);
-		}
+		int classIdx = addClass(owner);
+		int nameIdx = constantPool.add(ConstantUtf8.create(name));
+		int descriptorIdx = constantPool.add(ConstantUtf8.create(descriptor));
+		int nameAndTypeIdx = constantPool.add(ConstantNameAndType.create(nameIdx, descriptorIdx));
+		int memberRefIdx = constantPool.add(creator.create(classIdx, nameAndTypeIdx));
+		output.writeByte(opcode);
+		output.writeShort(memberRefIdx);
 	}
 
 	private int getOrPatchSwitch(long src, long pos, Label l) {
@@ -746,7 +659,7 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 		if (impl.isResolved()) {
 			return impl.getOffset(src);
 		}
-		toPatch.put(pos, new LabelPatch(l, src, true));
+		toPatch.add(new LabelPatch(l, pos, src, true));
 		return -1;
 	}
 
@@ -757,12 +670,14 @@ public final class BytecodeWriter implements BytecodeVisitor, Closeable {
 
 	private static final class LabelPatch {
 		final Label label;
-		final long origin;
+		final long jumpPc;
+		final long bytecodePc;
 		final boolean wide;
 
-		private LabelPatch(Label label, long origin, boolean wide) {
+		private LabelPatch(Label label, long jumpPc, long bytecodePc, boolean wide) {
 			this.label = label;
-			this.origin = origin;
+			this.jumpPc = jumpPc;
+			this.bytecodePc = bytecodePc;
 			this.wide = wide;
 		}
 	}

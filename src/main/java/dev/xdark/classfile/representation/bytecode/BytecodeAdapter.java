@@ -4,6 +4,7 @@ import dev.xdark.classfile.representation.Label;
 import dev.xdark.classfile.representation.entity.indy.ConstantDynamic;
 import dev.xdark.classfile.representation.entity.indy.InvokeDynamic;
 import dev.xdark.classfile.representation.entity.indy.MethodHandle;
+import dev.xdark.classfile.representation.stacmap.Frame;
 import dev.xdark.classfile.type.ClassType;
 import dev.xdark.classfile.type.InstanceType;
 import dev.xdark.classfile.type.MethodType;

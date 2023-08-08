@@ -5,6 +5,8 @@ import dev.xdark.classfile.attribute.code.stackmap.type.VerificationTypeDescript
 import dev.xdark.classfile.io.Codec;
 
 public final class LongVariableInfoImpl implements LongVariableInfo {
+	public static final LongVariableInfo INSTANCE = new LongVariableInfoImpl();
+
 	private LongVariableInfoImpl() {
 	}
 
@@ -14,6 +16,6 @@ public final class LongVariableInfoImpl implements LongVariableInfo {
 	}
 
 	public static Codec<LongVariableInfo> codec() {
-		return Codec.singleton(new LongVariableInfoImpl());
+		return Codec.singleton(INSTANCE);
 	}
 }

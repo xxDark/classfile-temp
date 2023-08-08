@@ -6,5 +6,5 @@ import java.io.IOException;
 
 public interface ClassAssembler extends ClassVisitor {
 
-	void dump(BinaryOutput output) throws IOException;
+	void dump(BinaryOutput output);
 }

@@ -14,17 +14,17 @@ final class WiredCodec<T> implements Codec<T> {
 	}
 
 	@Override
-	public T read(ClassReader reader) throws IOException {
+	public T read(ClassReader reader) {
 		return this.input.read(reader);
 	}
 
 	@Override
-	public void skip(ClassReader reader) throws IOException {
+	public void skip(ClassReader reader) {
 		this.input.skip(reader);
 	}
 
 	@Override
-	public void write(ClassWriter writer, T value) throws IOException {
+	public void write(ClassWriter writer, T value) {
 		this.output.write(writer, value);
 	}
 }

@@ -31,9 +31,6 @@ import dev.xdark.classfile.representation.bytecode.SimpleInstructionPositionTrac
 import dev.xdark.classfile.representation.bytecode.SimpleLabelPlacementTracker;
 import dev.xdark.classfile.type.InstanceType;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-
 final class MethodVisitorReader extends MemberVisitorReader implements dev.xdark.classfile.MethodVisitor {
 
 	MethodVisitorReader(MethodVisitor mv, SymbolTable symbolTable) {
@@ -58,12 +55,8 @@ final class MethodVisitorReader extends MemberVisitorReader implements dev.xdark
 			{
 				InstructionPositionTracker tracker = new SimpleInstructionPositionTracker();
 				// Mark all labels beforehand
-				try {
-					BytecodePump pump = new BytecodePump(bytecode.duplicate(), new LabelMarkVisitor(tracker, labelArray), tracker);
-					pump.pumpAll();
-				} catch (IOException ex) {
-					throw new UncheckedIOException(ex);
-				}
+				BytecodePump pump = new BytecodePump(bytecode.duplicate(), new LabelMarkVisitor(tracker, labelArray), tracker);
+				pump.pumpAll();
 			}
 			ConstantPool constantPool = symbolTable.constantPool();
 			// Create all try/catch blocks
@@ -88,14 +81,10 @@ final class MethodVisitorReader extends MemberVisitorReader implements dev.xdark
 			// Visit all instructions
 			BytecodeVisitor bv = cv.visitBytecode();
 			if (bv != null) {
-				try {
-					LabelPlacementTracker tracker = new SimpleLabelPlacementTracker(labelArray, bv);
-					BytecodeReader reader = new BytecodeReader(symbolTable, bv, labelArray, tracker);
-					BytecodePump pump = new BytecodePump(bytecode, reader, tracker);
-					pump.pumpAll();
-				} catch (IOException ex) {
-					throw new UncheckedIOException(ex);
-				}
+				LabelPlacementTracker tracker = new SimpleLabelPlacementTracker(labelArray, bv);
+				BytecodeReader reader = new BytecodeReader(symbolTable, bv, labelArray, tracker);
+				BytecodePump pump = new BytecodePump(bytecode, reader, tracker);
+				pump.pumpAll();
 			}
 			// Visit all try/catch blocks
 			for (ExceptionTableEntry entry : code.exceptionTable()) {

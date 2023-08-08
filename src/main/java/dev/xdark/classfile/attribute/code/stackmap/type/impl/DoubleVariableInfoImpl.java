@@ -5,7 +5,9 @@ import dev.xdark.classfile.attribute.code.stackmap.type.VerificationTypeDescript
 import dev.xdark.classfile.io.Codec;
 
 public final class DoubleVariableInfoImpl implements DoubleVariableInfo {
-	private DoubleVariableInfoImpl() {
+	public static final DoubleVariableInfo INSTANCE = new DoubleVariableInfoImpl();
+
+	public DoubleVariableInfoImpl() {
 	}
 
 	@Override
@@ -14,6 +16,6 @@ public final class DoubleVariableInfoImpl implements DoubleVariableInfo {
 	}
 
 	public static Codec<DoubleVariableInfo> codec() {
-		return Codec.singleton(new DoubleVariableInfoImpl());
+		return Codec.singleton(INSTANCE);
 	}
 }

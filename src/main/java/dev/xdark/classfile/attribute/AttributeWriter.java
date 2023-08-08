@@ -11,7 +11,7 @@ public final class AttributeWriter {
 	private AttributeWriter() {
 	}
 
-	public static void write(ClassWriter writer, IndexedAttribute attribute) throws IOException {
+	public static void write(ClassWriter writer, IndexedAttribute attribute) {
 		writer.writeConstantPoolIndex(attribute.getNameIndex());
 		Attribute attr = attribute.getAttribute();
 		if (attr instanceof SpecAttribute) {
@@ -23,7 +23,7 @@ public final class AttributeWriter {
 		}
 	}
 
-	public static void writeAll(ClassWriter writer, Collection<IndexedAttribute> attributes) throws IOException {
+	public static void writeAll(ClassWriter writer, Collection<IndexedAttribute> attributes) {
 		writer.writeShort(attributes.size());
 		for (IndexedAttribute attribute : attributes) {
 			write(writer, attribute);

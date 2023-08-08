@@ -6,8 +6,6 @@ import dev.xdark.classfile.attribute.AttributeMapper;
 import dev.xdark.classfile.constantpool.ConstantPool;
 import dev.xdark.classfile.io.BinaryInput;
 
-import java.io.IOException;
-
 public final class ClassReaderImpl implements ClassReader {
 
 	ClassFileVersion version;
@@ -40,12 +38,12 @@ public final class ClassReaderImpl implements ClassReader {
 	}
 
 	@Override
-	public void position(long position) throws IOException {
+	public void position(long position) {
 		input.position(position);
 	}
 
 	@Override
-	public ClassReader fork(long position) throws IOException {
+	public ClassReader fork(long position) {
 		ClassReaderImpl fork = new ClassReaderImpl(input.fork(position));
 		copyTo(fork);
 		return fork;
@@ -59,72 +57,72 @@ public final class ClassReaderImpl implements ClassReader {
 	}
 
 	@Override
-	public void limit(long limit) throws IOException {
+	public void limit(long limit) {
 		input.limit(limit);
 	}
 
 	@Override
-	public int readByte() throws IOException {
+	public int readByte() {
 		return input.readByte();
 	}
 
 	@Override
-	public int readUnsignedByte() throws IOException {
+	public int readUnsignedByte() {
 		return input.readUnsignedByte();
 	}
 
 	@Override
-	public int readShort() throws IOException {
+	public int readShort() {
 		return input.readShort();
 	}
 
 	@Override
-	public int readUnsignedShort() throws IOException {
+	public int readUnsignedShort() {
 		return input.readUnsignedShort();
 	}
 
 	@Override
-	public char readChar() throws IOException {
+	public char readChar() {
 		return input.readChar();
 	}
 
 	@Override
-	public int readInt() throws IOException {
+	public int readInt() {
 		return input.readInt();
 	}
 
 	@Override
-	public long readUnsignedInt() throws IOException {
+	public long readUnsignedInt() {
 		return input.readUnsignedInt();
 	}
 
 	@Override
-	public long readLong() throws IOException {
+	public long readLong() {
 		return input.readLong();
 	}
 
 	@Override
-	public float readFloat() throws IOException {
+	public float readFloat() {
 		return input.readFloat();
 	}
 
 	@Override
-	public double readDouble() throws IOException {
+	public double readDouble() {
 		return input.readDouble();
 	}
 
 	@Override
-	public int read(byte[] b, int off, int len) throws IOException {
+	public int read(byte[] b, int off, int len) {
 		return input.read(b, off, len);
 	}
 
 	@Override
-	public void readFully(byte[] b, int off, int len) throws IOException {
+	public void readFully(byte[] b, int off, int len) {
 		input.readFully(b, off, len);
 	}
 
 	@Override
-	public String readUtf() throws IOException {
+	public String readUtf() {
 		return input.readUtf();
 	}
 
@@ -139,12 +137,12 @@ public final class ClassReaderImpl implements ClassReader {
 	}
 
 	@Override
-	public long skip(long bytes) throws IOException {
+	public long skip(long bytes) {
 		return input.skip(bytes);
 	}
 
 	@Override
-	public ClassReader detach() throws IOException {
+	public ClassReader detach() {
 		ClassReaderImpl detached = new ClassReaderImpl(input.detach());
 		copyTo(detached);
 		return detached;

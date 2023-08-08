@@ -12,6 +12,7 @@ import dev.xdark.classfile.attribute.code.stackmap.type.impl.UninitializedVariab
 import dev.xdark.classfile.io.Codec;
 
 public final class VerificationTypeDescriptor<I extends VerificationTypeInfo> {
+	private static final VerificationTypeDescriptor<?>[] DESCRIPTORS = new VerificationTypeDescriptor[9];
 	public static final VerificationTypeDescriptor<TopVariableInfo> ITEM_Top = create(0, "ITEM_Top", TopVariableInfoImpl.codec());
 	public static final VerificationTypeDescriptor<IntegerVariableInfo> ITEM_Integer = create(1, "ITEM_Integer", IntegerVariableInfoImpl.codec());
 	public static final VerificationTypeDescriptor<FloatVariableInfo> ITEM_Float = create(2, "ITEM_Float", FloatVariableInfoImpl.codec());
@@ -44,7 +45,16 @@ public final class VerificationTypeDescriptor<I extends VerificationTypeInfo> {
 		return codec;
 	}
 
+	public static VerificationTypeDescriptor<?> byId(int id) {
+		if (id < 0 || id > 8) {
+			return null;
+		}
+		return DESCRIPTORS[id];
+	}
+
 	private static <I extends VerificationTypeInfo> VerificationTypeDescriptor<I> create(int id, String mnemonic, Codec<I> codec) {
-		return new VerificationTypeDescriptor<>(id, mnemonic, codec);
+		VerificationTypeDescriptor<I> descriptor = new VerificationTypeDescriptor<>(id, mnemonic, codec);
+		DESCRIPTORS[id] = descriptor;
+		return descriptor;
 	}
 }

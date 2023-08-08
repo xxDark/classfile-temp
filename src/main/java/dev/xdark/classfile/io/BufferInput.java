@@ -1,8 +1,5 @@
 package dev.xdark.classfile.io;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.UTFDataFormatException;
 import java.nio.ByteBuffer;
 
 public final class BufferInput implements BinaryInput {
@@ -43,6 +40,10 @@ public final class BufferInput implements BinaryInput {
 
 	@Override
 	public int readByte() {
+		ByteBuffer buffer = this.buffer;
+		if (buffer.remaining() == 0) {
+			throw new UncheckedIOException("Buffer overflow");
+		}
 		return buffer.get();
 	}
 
@@ -53,6 +54,10 @@ public final class BufferInput implements BinaryInput {
 
 	@Override
 	public int readShort() {
+		ByteBuffer buffer = this.buffer;
+		if (buffer.remaining() < 2) {
+			throw new UncheckedIOException("Buffer overflow");
+		}
 		return buffer.getShort();
 	}
 
@@ -63,11 +68,19 @@ public final class BufferInput implements BinaryInput {
 
 	@Override
 	public char readChar() {
+		ByteBuffer buffer = this.buffer;
+		if (buffer.remaining() < 2) {
+			throw new UncheckedIOException("Buffer overflow");
+		}
 		return buffer.getChar();
 	}
 
 	@Override
 	public int readInt() {
+		ByteBuffer buffer = this.buffer;
+		if (buffer.remaining() < 4) {
+			throw new UncheckedIOException("Buffer overflow");
+		}
 		return buffer.getInt();
 	}
 
@@ -78,21 +91,36 @@ public final class BufferInput implements BinaryInput {
 
 	@Override
 	public long readLong() {
+		ByteBuffer buffer = this.buffer;
+		if (buffer.remaining() < 8) {
+			throw new UncheckedIOException("Buffer overflow");
+		}
 		return buffer.getLong();
 	}
 
 	@Override
 	public float readFloat() {
+		ByteBuffer buffer = this.buffer;
+		if (buffer.remaining() < 4) {
+			throw new UncheckedIOException("Buffer overflow");
+		}
 		return buffer.getFloat();
 	}
 
 	@Override
 	public double readDouble() {
+		ByteBuffer buffer = this.buffer;
+		if (buffer.remaining() < 8) {
+			throw new UncheckedIOException("Buffer overflow");
+		}
 		return buffer.getDouble();
 	}
 
 	@Override
 	public int read(byte[] b, int off, int len) {
+		if (off < 0 || len < 0 || len > b.length - off) {
+			throw new IndexOutOfBoundsException();
+		}
 		ByteBuffer buffer = this.buffer;
 		int readable = Math.min(len, buffer.remaining());
 		if (readable == 0) return -1;
@@ -101,14 +129,19 @@ public final class BufferInput implements BinaryInput {
 	}
 
 	@Override
-	public void readFully(byte[] b, int off, int len) throws EOFException {
-		if (read(b, off, len) != len) {
-			throw new EOFException();
+	public void readFully(byte[] b, int off, int len)  {
+		if (off < 0 || len < 0 || len > b.length - off) {
+			throw new IndexOutOfBoundsException();
+		}
+		if (len == 0) return;
+		int read = read(b, off, len);
+		if (read != len) {
+			throw new UncheckedIOException(String.format("Expected to read %d, but only read %d", len, read));
 		}
 	}
 
 	@Override
-	public String readUtf() throws IOException {
+	public String readUtf() {
 		int utflen = readUnsignedShort();
 		byte[] bytearr;
 		char[] chararr;
@@ -148,11 +181,11 @@ public final class BufferInput implements BinaryInput {
 					/* 110x xxxx   10xx xxxx*/
 					count += 2;
 					if (count > utflen)
-						throw new UTFDataFormatException(
+						throw new UncheckedIOException(
 								"malformed input: partial character at end");
 					char2 = (int) bytearr[count - 1];
 					if ((char2 & 0xC0) != 0x80)
-						throw new UTFDataFormatException(
+						throw new UncheckedIOException(
 								"malformed input around byte " + count);
 					chararr[chararr_count++] = (char) (((c & 0x1F) << 6) |
 							(char2 & 0x3F));
@@ -161,12 +194,12 @@ public final class BufferInput implements BinaryInput {
 					/* 1110 xxxx  10xx xxxx  10xx xxxx */
 					count += 3;
 					if (count > utflen)
-						throw new UTFDataFormatException(
+						throw new UncheckedIOException(
 								"malformed input: partial character at end");
 					char2 = (int) bytearr[count - 2];
 					char3 = (int) bytearr[count - 1];
 					if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
-						throw new UTFDataFormatException(
+						throw new UncheckedIOException(
 								"malformed input around byte " + (count - 1));
 					chararr[chararr_count++] = (char) (((c & 0x0F) << 12) |
 							((char2 & 0x3F) << 6) |
@@ -174,7 +207,7 @@ public final class BufferInput implements BinaryInput {
 					break;
 				default:
 					/* 10xx xxxx,  1111 xxxx */
-					throw new UTFDataFormatException(
+					throw new UncheckedIOException(
 							"malformed input around byte " + count);
 			}
 		}

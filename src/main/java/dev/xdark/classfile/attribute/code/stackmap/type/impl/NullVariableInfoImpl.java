@@ -1,11 +1,12 @@
 package dev.xdark.classfile.attribute.code.stackmap.type.impl;
 
-import dev.xdark.classfile.attribute.code.stackmap.type.FloatVariableInfo;
 import dev.xdark.classfile.attribute.code.stackmap.type.NullVariableInfo;
 import dev.xdark.classfile.attribute.code.stackmap.type.VerificationTypeDescriptor;
 import dev.xdark.classfile.io.Codec;
 
 public final class NullVariableInfoImpl implements NullVariableInfo {
+	public static final NullVariableInfo INSTANCE = new NullVariableInfoImpl();
+
 	private NullVariableInfoImpl() {
 	}
 
@@ -15,6 +16,6 @@ public final class NullVariableInfoImpl implements NullVariableInfo {
 	}
 
 	public static Codec<NullVariableInfo> codec() {
-		return Codec.singleton(new NullVariableInfoImpl());
+		return Codec.singleton(INSTANCE);
 	}
 }

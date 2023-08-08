@@ -11,6 +11,6 @@ final class ZeroSkip implements Skip {
 	}
 
 	@Override
-	public void skip(ClassReader reader) throws IOException {
+	public void skip(ClassReader reader) {
 	}
 }

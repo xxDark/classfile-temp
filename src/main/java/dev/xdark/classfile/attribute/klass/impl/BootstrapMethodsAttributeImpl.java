@@ -35,7 +35,6 @@ public final class BootstrapMethodsAttributeImpl implements BootstrapMethodsAttr
 					long length = reader.readAttributeLength();
 					AttributeHelper.checkAtLeast(length, 2L);
 					int count = reader.readUnsignedShort();
-					AttributeHelper.checkAtLeast( length - 2L, count * 6L);
 					List<BootstrapMethod> bootstrapMethods = new ArrayList<>();
 					while (count-- != 0) {
 						bootstrapMethods.add(BootstrapMethod.CODEC.read(reader));

@@ -15,19 +15,19 @@ public interface ClassWriter extends BinaryOutput {
 
 	AttributeMapper attributeMapper();
 
-	default void writeConstantPoolTag(Tag<?> tag) throws IOException {
+	default void writeConstantPoolTag(Tag<?> tag) {
 		writeByte(tag.id());
 	}
 
-	default void writeConstantPoolIndex(int index) throws IOException {
+	default void writeConstantPoolIndex(int index) {
 		writeShort(index);
 	}
 
-	default void writeAccessFlags(int accessFlags) throws IOException {
+	default void writeAccessFlags(int accessFlags) {
 		writeShort(accessFlags);
 	}
 
-	default void writeAttributeLength(long length) throws IOException {
+	default void writeAttributeLength(long length) {
 		writeUnsignedInt(length);
 	}
 }

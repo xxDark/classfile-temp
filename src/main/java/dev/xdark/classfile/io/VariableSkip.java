@@ -2,8 +2,6 @@ package dev.xdark.classfile.io;
 
 import dev.xdark.classfile.ClassReader;
 
-import java.io.IOException;
-
 public final class VariableSkip implements Skip {
 	public static final VariableSkip
 			U2 = new VariableSkip(BinaryInput::readUnsignedShort),
@@ -15,7 +13,7 @@ public final class VariableSkip implements Skip {
 	}
 
 	@Override
-	public void skip(ClassReader reader) throws IOException {
+	public void skip(ClassReader reader) {
 		long toSkip = this.toSkip.read(reader);
 		reader.skipBytes(toSkip);
 	}
@@ -23,6 +21,6 @@ public final class VariableSkip implements Skip {
 	@FunctionalInterface
 	public interface VariableRead {
 
-		long read(BinaryInput input) throws IOException;
+		long read(BinaryInput input);
 	}
 }

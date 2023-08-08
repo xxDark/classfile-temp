@@ -1,6 +1,6 @@
 package dev.xdark.classfile.attribute.shared.annotation;
 
-import dev.xdark.classfile.BadClassFileFormatException;
+import dev.xdark.classfile.io.UncheckedIOException;
 import dev.xdark.classfile.io.Codec;
 import dev.xdark.classfile.io.Input;
 
@@ -10,14 +10,14 @@ public interface Element {
 				int tag = reader.readUnsignedByte();
 				ElementDescriptor<?> descriptor = ElementDescriptor.byTag(tag);
 				if (descriptor == null) {
-					throw new BadClassFileFormatException(String.format("Unknown annotation tag %d", tag));
+					throw new UncheckedIOException(String.format("Unknown annotation tag %d", tag));
 				}
 				return descriptor.codec().read(reader);
 			}, reader -> {
 				int tag = reader.readUnsignedByte();
 				ElementDescriptor<?> descriptor = ElementDescriptor.byTag(tag);
 				if (descriptor == null) {
-					throw new BadClassFileFormatException(String.format("Unknown annotation tag %d", tag));
+					throw new UncheckedIOException(String.format("Unknown annotation tag %d", tag));
 				}
 				descriptor.codec().skip(reader);
 			}),
